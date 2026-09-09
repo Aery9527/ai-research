@@ -21,6 +21,7 @@
   dependent factor that can only be settled at runtime (e.g. concurrency, randomness, live external state, or a dependency whose source is
   unavailable for inspection).
 - Use the OKLCH color space for any visual/screen-presentation task, e.g. producing HTML/CSS or slides.
+- When working with code or HTML, prefer `LSP` so lookups and edits follow the actual program symbols instead of relying on text guessing.
 
 # Response Principles
 
