@@ -28,6 +28,7 @@
 
 # call agent 原則
 
+- 明文禁止 subagent 再次 call 其他的 agent or reviewer 執行，一律要求由 agent 自行處理任務。
 - 對其他 agent 的 review 保持質疑態度，不盲從接受；當 review 推論薄弱、與使用者既有 context 牴觸，必須回推、與該 agent 來回討論，直到雙方對問題達成共識。
 - 啟動 subagent 或外部 agent CLI 後，必須每 3 分鐘檢查一次是否有實際輸出或 protocol event，若連續 15 分鐘確認停滯才可以重新啟動。只有 heartbeat
   而沒有實際事件則不算進度，持續累計 15 分鐘重啟門檻。

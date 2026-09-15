@@ -40,6 +40,7 @@
 
 # Call Agent Principles
 
+- Subagents are explicitly forbidden from calling other agents or reviewers; a subagent must handle its assigned task itself.
 - Maintain critical scrutiny toward reviews from other agents — do not accept them blindly. When a review's reasoning is weak or conflicts with the
   user's existing context, push back and engage in back-and-forth discussion with that agent until both sides reach consensus on the problem.
 - After launching a subagent or external agent CLI, check at least every 3 minutes whether there has been actual output or a protocol event; only
