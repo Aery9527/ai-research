@@ -5,6 +5,10 @@ $ToolRoot = Join-Path $HOME ".config\powershell"
 
 # workspace
 
+function aws { # golang workspace: GolandProjects
+    cd (Join-Path $HOME "AeryProjects")
+}
+
 function gws { # golang workspace: GolandProjects
     cd (Join-Path $HOME "GolandProjects")
 }
