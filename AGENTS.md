@@ -1,33 +1,33 @@
-# AGENTS.md — AI Tool Skills Knowledge Base
+# AGENTS.md
 
-Purpose: track upstream AI tool skills and maintain local sync and governance workflows.
+- This repository researches AI CLI tools: it tracks upstream skills, plugins, and MCP servers as git submodules, and maintains research docs, user-level setting templates, installers, and local sync and governance workflows.
+- It is not a distributable plugin; [.claude/skills](.claude/skills/) holds project skills used only to maintain this repository.
 
-## Repository Governance
+## Directory Index
 
-### Bilingual AGENTS Rule
+- [upstream](upstream/) — upstream git submodules; MUST NOT modify their content directly; overview in [UPSTREAM.md](upstream/UPSTREAM.md)
+- [cli-agents](cli-agents/) — AI CLI reference docs, user-level setting templates, and one-click installers that write to the user's home directory; overview in [CLI-AGENTS.md](cli-agents/CLI-AGENTS.md)
+- [scripts](scripts/) — repo maintenance and automation scripts; [SCRIPTS.md](scripts/SCRIPTS.md) is the single index
+- [tool](tool/) — local tool docs and PowerShell profile scripts; overview in [TOOL.md](tool/TOOL.md)
+- [.claude/skills](.claude/skills/) — project skills and the shared upstream sync protocol
+- [.github/dependabot.yml](.github/dependabot.yml) — daily check for upstream submodule updates
 
-- `AGENTS.md` is the English primary version.
-- `AGENTS_zhTW.md` is the Traditional Chinese mirror.
-- Any addition, deletion, rename, or semantic change to either file MUST update both language versions in the same change slice.
-- The agent MUST NOT leave one language temporarily stale with a plan to sync it later.
+## Notes
 
-### `scripts/` Documentation Sync Rule
+- `AGENTS.md` is the English primary version and `AGENTS_zhTW.md` is its Traditional Chinese mirror; any change to either MUST update both in the same change slice, and MUST NOT leave one language stale to sync later.
+- When adding, removing, renaming, or materially changing a script under [scripts](scripts/), MUST update [SCRIPTS.md](scripts/SCRIPTS.md) in the same slice; a new script MUST document at least purpose, arguments, behavior, risks or side effects, and a minimal usage example.
+- When a script change makes an entry or summary in [README.md](README.md) stale, MUST update README.md in the same slice.
+- When adding, removing, or materially changing a one-click installer under [cli-agents](cli-agents/) or [tool](tool/), MUST update the one-click installer table in [CLI-AGENTS.md](cli-agents/CLI-AGENTS.md) in the same slice.
+- [install-statusline.ps1](cli-agents/claude-code/install-statusline.ps1) and [tool/PowerShell/install.ps1](tool/PowerShell/install.ps1) overwrite existing files at their destination without backup.
 
-- When adding, removing, renaming, or materially changing scripts under [`scripts/`](scripts/), the agent MUST update [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md) in the same slice.
-- [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md) is the single index for [`scripts/`](scripts/); new scripts MUST document at least purpose, arguments, behavior, risks or side effects, and a minimal usage example.
-- If [`README.md`](README.md) already lists script entries or summaries, the agent MUST check whether it also needs to be updated.
+## Reading Guide
 
-## Project Structure
-
-- [`upstream/`](upstream/) — Upstream sources — Contains upstream projects from GitHub as git submodules (skills, plugins, MCP servers, or other tools) that remain the upstream targets this project tracks; agents MUST NOT modify upstream content directly.
-- [`.claude/skills/`](.claude/skills/) — Project skills — Contains local maintenance skills and shared protocols for this repo.
-- [`scripts/`](scripts/) — Local maintenance scripts — Contains repo maintenance and automation scripts; the document index lives in [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md).
-
-## Local Install Scripts
-
-This repo also ships one-click PowerShell installers that write to the user's home directory (outside the repo), separate from `scripts/`. They include these two:
-
-- [`cli-agents/claude-code/install-statusline.ps1`](cli-agents/claude-code/install-statusline.ps1) — deploys the Claude Code status line and lifecycle-state hooks to `~/.claude/`.
-- [`tool/PowerShell/install.ps1`](tool/PowerShell/install.ps1) — deploys the PowerShell profile to the Documents `PowerShell` folder and the remaining tool scripts to `$HOME/.config/powershell/`.
-
-Both overwrite existing files at their destination without backup. See [`README.md`](README.md#一鍵安裝腳本) for the full breakdown of what each script installs.
+- [UPSTREAM.md](upstream/UPSTREAM.md) when adding, syncing, or installing an upstream project.
+- [CLI-AGENTS.md](cli-agents/CLI-AGENTS.md) when working on the CLI reference docs, setting templates, or one-click installers, or when deciding between an agent and a skill.
+- [SCRIPTS.md](scripts/SCRIPTS.md) when running or changing a script under `scripts/`.
+- [TOOL.md](tool/TOOL.md) when working on the PowerShell profile or tool scripts.
+- Skills:
+    - `sync-all` to process Dependabot submodule update PRs.
+    - `anthropic-skills-sync` to sync the `anthropic-skills` upstream.
+    - `cli-doc-sync` to align the CLI reference docs with the official docs.
+    - `skills-governance` when creating, modifying, renaming, or removing a project skill.

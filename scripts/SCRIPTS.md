@@ -37,7 +37,7 @@ flowchart LR
 
 `scripts/` 底下大多數腳本只操作 repo 內部或本機既有設定（例如 Git config），但也有例外：像 [`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1) 這種一鍵安裝／設定型腳本，即使會寫入使用者家目錄（repo 之外），只要放在 `scripts/` 下就一律在這份文件收錄索引，不因為寫入範圍而排除。
 
-為了避免腳本散落但沒有文件，這份 `README.md` 應該同時扮演兩個角色：
+為了避免腳本散落但沒有文件，這份 `SCRIPTS.md` 應該同時扮演兩個角色：
 
 1. **索引入口**：快速知道目前有哪些腳本。
 2. **操作文件**：知道每支腳本會改什麼、怎麼跑、有哪些風險。
@@ -170,7 +170,7 @@ bash ./scripts/link-agent-skills.sh
 #### 風險與限制
 
 - **任一項失敗就中斷**，不會嘗試繼續安裝清單中的其餘項目；這是刻意設計（子腳本彼此仍是各自獨立、有系統層級副作用的安裝流程，中斷後可以修好問題再單獨重跑失敗的那一項）。
-- 子腳本本身的風險（呼叫 winget/Homebrew 安裝或更新 Node.js、`npm install -g` 安裝 CLI 等）請參考 [`cc-cli.md`](../cli-agents/claude-code/cc-cli.md)、[`cx-cli.md`](../cli-agents/codex/cx-cli.md) 與 `README.md` 的「一鍵安裝腳本」章節；選項 5、6（`setup-cc-desktop-ahk.ps1` / `setup-cx-desktop-ahk.ps1`）的風險見各自的章節（[`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)、[`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1)）。
+- 子腳本本身的風險（呼叫 winget/Homebrew 安裝或更新 Node.js、`npm install -g` 安裝 CLI 等）請參考 [`cc-cli.md`](../cli-agents/claude-code/cc-cli.md)、[`cx-cli.md`](../cli-agents/codex/cx-cli.md) 與 [`CLI-AGENTS.md`](../cli-agents/CLI-AGENTS.md#一鍵安裝腳本) 的「一鍵安裝腳本」章節；選項 5、6（`setup-cc-desktop-ahk.ps1` / `setup-cx-desktop-ahk.ps1`）的風險見各自的章節（[`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)、[`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1)）。
 - `install-all.ps1` 含有中文選單文字，檔案必須保留 UTF-8 BOM 才能被 Windows PowerShell 5.1 正確解析；`install-all.sh` 則相反，開頭不可以有 BOM（會破壞 `#!/usr/bin/env bash` shebang 辨識）。
 
 #### 範例
