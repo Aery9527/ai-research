@@ -25,7 +25,7 @@
 
 ## 本機一鍵安裝腳本
 
-本 repo 另外還有兩支會寫入使用者家目錄（repo 之外）的一鍵 PowerShell 安裝腳本，與 `scripts/` 分開管理：
+本 repo 另外還有會寫入使用者家目錄（repo 之外）的一鍵 PowerShell 安裝腳本，與 `scripts/` 分開管理，其中包含下列兩支：
 
 - [`cli-agents/claude-code/install-statusline.ps1`](cli-agents/claude-code/install-statusline.ps1) — 將 Claude Code 的 status line 與生命週期狀態 hooks 部署到 `~/.claude/`。
 - [`tool/PowerShell/install.ps1`](tool/PowerShell/install.ps1) — 將 PowerShell profile 部署到 Documents 底下的 `PowerShell` 資料夾，其餘工具腳本部署到 `$HOME/.config/powershell/`。

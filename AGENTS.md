@@ -25,7 +25,7 @@ Purpose: track upstream AI tool skills and maintain local sync and governance wo
 
 ## Local Install Scripts
 
-This repo also ships two one-click PowerShell installers that write to the user's home directory (outside the repo), separate from `scripts/`:
+This repo also ships one-click PowerShell installers that write to the user's home directory (outside the repo), separate from `scripts/`. They include these two:
 
 - [`cli-agents/claude-code/install-statusline.ps1`](cli-agents/claude-code/install-statusline.ps1) — deploys the Claude Code status line and lifecycle-state hooks to `~/.claude/`.
 - [`tool/PowerShell/install.ps1`](tool/PowerShell/install.ps1) — deploys the PowerShell profile to the Documents `PowerShell` folder and the remaining tool scripts to `$HOME/.config/powershell/`.

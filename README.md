@@ -56,9 +56,11 @@ git submodule update --init --recursive
 
 ## 同步上游更新
 
-[GitHub Dependabot](.github/dependabot.yml) 每日自動偵測上游 submodule 變更並開 PR。收到通知 email 後，`sync-all` 一個 skill 即完成全部同步：
+[GitHub Dependabot](.github/dependabot.yml) 每日自動偵測上游 submodule 變更並開 PR。收到通知 email 後，invoke `sync-all` 同步：
 
 > Dependabot 開 PR → email 通知 → invoke `sync-all` → pull + AI 摘要 + commit + push + 關閉 PR
+
+`sync-all` 只處理 [對應表](.claude/skills/sync-all/SKILL.md) 內有 sync skill 的上游，目前只有 `anthropic-skills`；`webwright` 沒有對應 sync skill，`sync-all` 會跳過它，需要另外處理。
 
 [Back to top](#quick-navigation)
 
@@ -329,8 +331,7 @@ ai-research/
 │   └── codex/                # Codex CLI 參考
 │       └── cx-cli.md
 ├── scripts/                  # 維護與自動化腳本文件
-│   ├── README.md
-│   └── remove-local-git-user.ps1
+│   └── SCRIPTS.md            # scripts/ 的唯一索引
 ├── .claude/skills/           # repo 專用 project skills
 │   ├── _shared/              # 共用協議（upstream-sync-protocol）
 │   ├── skills-governance/    # project skill 治理規則
@@ -344,8 +345,7 @@ ai-research/
 ├── CLAUDE.md                 # Claude Code project instructions
 ├── tool/                     # 工具操作文件
 │   ├── TOOL.md
-│   ├── ps_func.md
-│   └── wsl-claude-code-env-setup.md
+│   └── PowerShell/           # PowerShell profile 與工具腳本
 ```
 
 [Back to top](#quick-navigation)
