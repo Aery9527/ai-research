@@ -12,14 +12,14 @@ description: >-
 ## Directory Boundaries
 
 - [`.claude/skills/`](../) — project skills — 放本 repo 執行維護任務時需要的 sync skill、CLI 文件同步 skill、治理 workflow 與共用協議。
-- [`skill-source/`](../../../skill-source/) — upstream submodule container — 集中存放上游 skill 函式庫的 git submodule；嚴禁直接修改上游內容。
-- [`skill-source/anthropic-skills/`](../../../skill-source/anthropic-skills/) — upstream submodule — 放上游 skills 原始內容；除同步任務外，不承擔本 repo 治理規則。
+- [`upstream/`](../../../upstream/) — upstream submodule container — 集中存放上游專案（skill、plugin、MCP server 或其他工具）的 git submodule；嚴禁直接修改上游內容。
+- [`upstream/anthropic-skills/`](../../../upstream/anthropic-skills/) — upstream submodule — 放上游 skills 原始內容；除同步任務外，不承擔本 repo 治理規則。
 
 ## Placement Rules
 
 - 如果內容是本 repo 專用且需要被 agent 執行的 workflow skill，必須放在 [`.claude/skills/`](../)。
 - 如果內容是在調整 sync 流程、CLI 文件同步流程、治理 workflow 或 shared protocol，必須放在 [`.claude/skills/`](../)。
-- 如果內容只是協助選擇或解釋 upstream skill，應優先讀取 [`skill-source/`](../../../skill-source/) 內的上游 `SKILL.md`，嚴禁為此建立 project skill。
+- 如果內容只是協助選擇或解釋 upstream skill，應優先讀取 [`upstream/`](../../../upstream/) 內的上游 `SKILL.md`，嚴禁為此建立 project skill。
 - 如果規則離開此 repo 就失去意義，嚴禁塞進 upstream submodule。
 
 ## Workflow

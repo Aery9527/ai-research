@@ -11,7 +11,7 @@
 - `LIBRARY_NAME` — 庫的識別名稱。
   - Anthropic 範例：`anthropic-skills`
 - `SUBMODULE_PATH` — git submodule 相對路徑。
-  - Anthropic 範例：`skill-source/anthropic-skills/`
+  - Anthropic 範例：`upstream/anthropic-skills/`
 - `SKILL_SOURCE_PATTERN` — skill 來源路徑模式。
   - Anthropic 範例：`skills/<name>/SKILL.md`
 - `CO_AUTHOR` — commit 的 `Co-Authored-By` 值。

@@ -14,7 +14,7 @@ description: >-
 
 - `LIBRARY_NAME` -> `anthropic-skills`
 - `UPSTREAM_URL` -> [anthropics/skills.git](https://github.com/anthropics/skills.git)
-- `SUBMODULE_PATH` -> `skill-source/anthropic-skills/`
+- `SUBMODULE_PATH` -> `upstream/anthropic-skills/`
 - `SKILL_SOURCE_PATTERN` -> `skills/<name>/SKILL.md`
 - `CO_AUTHOR` -> `Claude Sonnet 4.6 <noreply@anthropic.com>`
 

@@ -69,16 +69,16 @@ git submodule update --init --recursive
 
 ## Skills 系統
 
-本 repo 維護 upstream skills，以及本 repo 處理任務時使用的 project skills：
+本 repo 以 submodule 追蹤上游專案（skill、plugin、MCP server 等），並維護本 repo 處理任務時使用的 project skills：
 
-| 目錄 | 來源 | 用途 |
-|------|------|------|
-| `skill-source/anthropic-skills/` | [Anthropic 上游](https://github.com/anthropics/skills) | 創意設計、前端工程、AI 工程、Office 文件、技術寫作 |
-| `skill-source/webwright/` | [Microsoft Webwright 上游](https://github.com/microsoft/Webwright) | 瀏覽器自動化：以單一 bash command 驅動本地 Playwright workspace，附截圖與 action log 自我驗證 |
-| `skill-source/codex-plugin-cc/` | [OpenAI codex-plugin-cc 上游](https://github.com/openai/codex-plugin-cc) | Claude Code plugin：在 Claude Code 內呼叫 Codex 做 code review 或委派任務 |
-| `.claude/skills/` | 本地 project skills | 同步上游、同步 CLI 文件、治理 workflow、共用維運協議 |
+| 目錄 | 類型 | 來源 | 用途 |
+|------|------|------|------|
+| `upstream/anthropic-skills/` | skill | [Anthropic 上游](https://github.com/anthropics/skills) | 創意設計、前端工程、AI 工程、Office 文件、技術寫作 |
+| `upstream/webwright/` | skill | [Microsoft Webwright 上游](https://github.com/microsoft/Webwright) | 瀏覽器自動化：以單一 bash command 驅動本地 Playwright workspace，附截圖與 action log 自我驗證 |
+| `upstream/codex-plugin-cc/` | Claude Code plugin | [OpenAI codex-plugin-cc 上游](https://github.com/openai/codex-plugin-cc) | 在 Claude Code 內呼叫 Codex 做 code review 或委派任務 |
+| `.claude/skills/` | project skill | 本地 | 同步上游、同步 CLI 文件、治理 workflow、共用維運協議 |
 
-要確認 upstream skill 的用途時，直接讀取 [`skill-source/anthropic-skills/skills/`](skill-source/anthropic-skills/skills/) 下的原始 `SKILL.md`；真正執行時，使用已安裝的 upstream skill。
+要確認 upstream skill 的用途時，直接讀取 [`upstream/anthropic-skills/skills/`](upstream/anthropic-skills/skills/) 下的原始 `SKILL.md`；真正執行時，使用已安裝的 upstream skill。
 
 ### 共用基礎設施
 
@@ -108,18 +108,18 @@ Claude Code plugin 系統在 `.claude-plugin/` 目錄下有兩種設定檔，職
 
 | 維度 | Claude Code | GitHub Copilot CLI | Codex |
 |------|------|------|------|
-| 說明 | 使用 `anthropics/skills` 作為 marketplace source，marketplace 名稱是 `anthropic-agent-skills`。 | 使用同一份 `.claude-plugin/marketplace.json`，透過 `copilot plugin` 註冊 marketplace 並安裝 plugin。 | 目前不適用；`skill-source/anthropic-skills/` 沒有 Codex 用的 `.agents/plugins/marketplace.json` 或 `.codex-plugin/plugin.json`。 |
+| 說明 | 使用 `anthropics/skills` 作為 marketplace source，marketplace 名稱是 `anthropic-agent-skills`。 | 使用同一份 `.claude-plugin/marketplace.json`，透過 `copilot plugin` 註冊 marketplace 並安裝 plugin。 | 目前不適用；`upstream/anthropic-skills/` 沒有 Codex 用的 `.agents/plugins/marketplace.json` 或 `.codex-plugin/plugin.json`。 |
 | 安裝 | `/plugin marketplace add anthropics/skills`<br>`/plugin install document-skills@anthropic-agent-skills`<br>`/plugin install example-skills@anthropic-agent-skills`<br>`/plugin install claude-api@anthropic-agent-skills`<br>`/reload-plugins` | `copilot plugin marketplace add anthropics/skills`<br>`copilot plugin install document-skills@anthropic-agent-skills`<br>`copilot plugin install example-skills@anthropic-agent-skills`<br>`copilot plugin install claude-api@anthropic-agent-skills`<br>`copilot plugin list` | 需先另建 Codex 封裝後才能安裝。 |
 | 更新 | `/plugin marketplace update anthropic-agent-skills`<br>`/reload-plugins`<br>或在 `/plugin` 的 Marketplaces tab 對 `anthropic-agent-skills` 啟用 auto-update。 | `copilot plugin update document-skills@anthropic-agent-skills`<br>`copilot plugin update example-skills@anthropic-agent-skills`<br>`copilot plugin update claude-api@anthropic-agent-skills` | 不適用。 |
 | 移除 | `/plugin uninstall document-skills@anthropic-agent-skills`<br>`/plugin uninstall example-skills@anthropic-agent-skills`<br>`/plugin uninstall claude-api@anthropic-agent-skills`<br>`/plugin marketplace remove anthropic-agent-skills` | `copilot plugin uninstall document-skills@anthropic-agent-skills`<br>`copilot plugin uninstall example-skills@anthropic-agent-skills`<br>`copilot plugin uninstall claude-api@anthropic-agent-skills`<br>`copilot plugin marketplace remove anthropic-agent-skills` | 不適用。 |
 
-詳細設定見 [`skill-source/anthropic-skills/.claude-plugin/marketplace.json`](skill-source/anthropic-skills/.claude-plugin/marketplace.json)。
+詳細設定見 [`upstream/anthropic-skills/.claude-plugin/marketplace.json`](upstream/anthropic-skills/.claude-plugin/marketplace.json)。
 
 > **已知 bug**：若同一批 skills 同時由 project top-level entries 與 plugin namespace 暴露，context 與 slash command picker 仍可能重複。當前結構設計就是為了避免這個情況。相關 issue：[anthropics/claude-code#29520](https://github.com/anthropics/claude-code/issues/29520)、[anthropics/skills#189](https://github.com/anthropics/skills/issues/189)
 
 ### webwright
 
-`webwright` 是 Microsoft Research 出品的瀏覽器代理 skill：把宿主 agent 變成 SOTA browser agent，透過一次一個 bash command 驅動本地 Playwright workspace，並把每步截圖與 action log 保存在 `final_runs/run_<id>/`，再以視覺方式自我驗證結果。上游同時提供 Claude Code 與 Codex 的 plugin manifest，[`skill-source/webwright/skills/webwright/`](skill-source/webwright/skills/webwright/) 內容兩端共用。
+`webwright` 是 Microsoft Research 出品的瀏覽器代理 skill：把宿主 agent 變成 SOTA browser agent，透過一次一個 bash command 驅動本地 Playwright workspace，並把每步截圖與 action log 保存在 `final_runs/run_<id>/`，再以視覺方式自我驗證結果。上游同時提供 Claude Code 與 Codex 的 plugin manifest，[`upstream/webwright/skills/webwright/`](upstream/webwright/skills/webwright/) 內容兩端共用。
 
 | 維度 | Claude Code | GitHub Copilot CLI | Codex |
 |------|------|------|------|
@@ -133,14 +133,14 @@ Codex 建議使用下列 skill-only 安裝流程：
 ```powershell
 git submodule update --init --recursive
 
-$skillTarget = Resolve-Path "skill-source\webwright\skills\webwright"
+$skillTarget = Resolve-Path "upstream\webwright\skills\webwright"
 $skillLink = Join-Path $env:USERPROFILE ".agents\skills\webwright"
 New-Item -ItemType Directory -Force -Path (Split-Path $skillLink) | Out-Null
 if (-not (Test-Path $skillLink)) {
     New-Item -ItemType Junction -Path $skillLink -Target $skillTarget.Path | Out-Null
 }
 
-python -m pip install -e "skill-source\webwright"
+python -m pip install -e "upstream\webwright"
 python -m playwright install firefox
 ```
 
@@ -155,11 +155,11 @@ codex
 python -m playwright --version
 ```
 
-重新開 Codex 後，可用 `$webwright` 明確呼叫，或讓 Codex 依 [`skill-source/webwright/skills/webwright/SKILL.md`](skill-source/webwright/skills/webwright/SKILL.md) 的 description 自動觸發。若要使用原生 Webwright CLI harness，再額外執行 `python -m playwright install chromium` 並依 backend 設定 API key；`python -m webwright.run.cli doctor` 檢查的是原生 harness，不是 Codex skill-only 路徑。
+重新開 Codex 後，可用 `$webwright` 明確呼叫，或讓 Codex 依 [`upstream/webwright/skills/webwright/SKILL.md`](upstream/webwright/skills/webwright/SKILL.md) 的 description 自動觸發。若要使用原生 Webwright CLI harness，再額外執行 `python -m playwright install chromium` 並依 backend 設定 API key；`python -m webwright.run.cli doctor` 檢查的是原生 harness，不是 Codex skill-only 路徑。
 
 > [Webwright 官方 README](https://github.com/microsoft/Webwright) 仍列出 `codex plugin marketplace add microsoft/Webwright` → `/plugins` 的 plugin 安裝流程；但目前已有 [microsoft/Webwright issue #37](https://github.com/microsoft/Webwright/issues/37) 回報該 Git marketplace 缺少 Codex 會列舉的 `.agents/plugins/marketplace.json` index，導致 `webwright` 在 Codex plugin browser 內不可見。等上游補齊 marketplace index 後，再改回官方 plugin 流程。
 
-詳細設定見 [`skill-source/webwright/.claude-plugin/marketplace.json`](skill-source/webwright/.claude-plugin/marketplace.json)、[`skill-source/webwright/.claude-plugin/plugin.json`](skill-source/webwright/.claude-plugin/plugin.json) 與 [`skill-source/webwright/.codex-plugin/plugin.json`](skill-source/webwright/.codex-plugin/plugin.json)。
+詳細設定見 [`upstream/webwright/.claude-plugin/marketplace.json`](upstream/webwright/.claude-plugin/marketplace.json)、[`upstream/webwright/.claude-plugin/plugin.json`](upstream/webwright/.claude-plugin/plugin.json) 與 [`upstream/webwright/.codex-plugin/plugin.json`](upstream/webwright/.codex-plugin/plugin.json)。
 
 [Back to top](#quick-navigation)
 
@@ -176,7 +176,7 @@ python -m playwright --version
 | 更新 | `/plugin marketplace update openai-codex`<br>`/reload-plugins` |
 | 移除 | `/plugin uninstall codex@openai-codex`<br>`/plugin marketplace remove openai-codex` |
 
-詳細設定見 [`skill-source/codex-plugin-cc/.claude-plugin/marketplace.json`](skill-source/codex-plugin-cc/.claude-plugin/marketplace.json) 與 [`skill-source/codex-plugin-cc/plugins/codex/.claude-plugin/plugin.json`](skill-source/codex-plugin-cc/plugins/codex/.claude-plugin/plugin.json)。
+詳細設定見 [`upstream/codex-plugin-cc/.claude-plugin/marketplace.json`](upstream/codex-plugin-cc/.claude-plugin/marketplace.json) 與 [`upstream/codex-plugin-cc/plugins/codex/.claude-plugin/plugin.json`](upstream/codex-plugin-cc/plugins/codex/.claude-plugin/plugin.json)。
 
 [Back to top](#quick-navigation)
 
@@ -339,7 +339,7 @@ powershell -ExecutionPolicy Bypass -File .\cli-agents\install-sys-prompt.ps1
 
 ```
 ai-research/
-├── skill-source/             # 上游 submodule 容器
+├── upstream/                 # 上游 submodule 容器（skill、plugin、MCP server 等）
 │   ├── anthropic-skills/     # Anthropic 上游 skills submodule
 │   ├── webwright/            # Microsoft Webwright 瀏覽器代理 submodule
 │   └── codex-plugin-cc/      # OpenAI Codex plugin for Claude Code submodule

@@ -1,9 +1,9 @@
 [submodule "anthropic-skills"]
-	path = skill-source/anthropic-skills
+	path = upstream/anthropic-skills
 	url = https://github.com/anthropics/skills.git
 [submodule "webwright"]
-	path = skill-source/webwright
+	path = upstream/webwright
 	url = https://github.com/microsoft/Webwright.git
 [submodule "codex-plugin-cc"]
-	path = skill-source/codex-plugin-cc
+	path = upstream/codex-plugin-cc
 	url = https://github.com/openai/codex-plugin-cc.git

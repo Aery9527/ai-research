@@ -43,10 +43,10 @@ gh pr list \
 
 ## Step 2 — 解析 submodule 名稱
 
-從 `headRefName` 中移除前綴 `dependabot/submodules/` 得到 submodule path（自 submodules 搬遷至 `skill-source/` 後，路徑前綴含 `skill-source/`）：
+從 `headRefName` 中移除前綴 `dependabot/submodules/` 得到 submodule path（路徑前綴為 `upstream/`）：
 
 ```
-dependabot/submodules/skill-source/anthropic-skills  →  skill-source/anthropic-skills
+dependabot/submodules/upstream/anthropic-skills  →  upstream/anthropic-skills
 ```
 
 ## Step 3 — 使用固定 sync skill 對應表
@@ -55,7 +55,7 @@ dependabot/submodules/skill-source/anthropic-skills  →  skill-source/anthropic
 
 ```
 submodule path                    →  skill 目錄名稱
-"skill-source/anthropic-skills"   →  "anthropic-skills-sync"
+"upstream/anthropic-skills"   →  "anthropic-skills-sync"
 ```
 
 ## Step 4 — 比對並準備執行清單

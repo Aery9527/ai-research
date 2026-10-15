@@ -19,7 +19,7 @@
 
 ## 專案結構
 
-- [`skill-source/`](skill-source/) — 上游 skill 來源 — 集中存放來自 GitHub 的 skill 函式庫 git submodule，作為本專案持續跟進的上游標的；agents 嚴禁直接修改上游內容。
+- [`upstream/`](upstream/) — 上游來源 — 集中存放來自 GitHub 的上游專案 git submodule（skill、plugin、MCP server 或其他工具），作為本專案持續跟進的上游標的；agents 嚴禁直接修改上游內容。
 - [`.claude/skills/`](.claude/skills/) — Project skills — 存放本 repo 的本地維運 skills 與共用協議。
 - [`scripts/`](scripts/) — 本地維護腳本 — 存放 repo 維護與自動化腳本；文件索引在 [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md)。
 
