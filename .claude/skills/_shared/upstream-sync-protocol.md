@@ -82,8 +82,8 @@ NEW_HEAD=$(git -C {{SUBMODULE_PATH}} rev-parse --short HEAD)
 
 依本次上游變更（包含 `NEW_SKILLS` 與 skill 行為變更），逐項檢查下列文件；受影響者必須同步更新：
 
-1. [`AGENTS.md`](../../../AGENTS.md)，如果 repo 規則或目錄結構受到影響
-2. [`AGENTS_ch.md`](../../../AGENTS_ch.md)，如果 [`AGENTS.md`](../../../AGENTS.md) 有語意變更
+1. [`LORE.md`](../../../LORE.md)，如果 repo 規則或目錄結構受到影響
+2. [`LORE_ch.md`](../../../LORE_ch.md)，如果 [`LORE.md`](../../../LORE.md) 有語意變更
 3. [`README.md`](../../../README.md)，如果公開導覽或目錄結構受到影響
 4. [`upstream/UPSTREAM.md`](../../../upstream/UPSTREAM.md)，如果上游清單、用途或安裝方式受到影響
 
@@ -105,7 +105,7 @@ Co-Authored-By: {{CO_AUTHOR}}"
 
 - 如果 skill 在上游被刪除，必須通知使用者；嚴禁自動刪除本 repo 的對應自管內容。
 - 如果新 skill 沒有 `SKILL.md`，必須記錄警告並跳過，嚴禁為它建立本地說明。
-- 如果 skill 行為變更影響 [`AGENTS.md`](../../../AGENTS.md) 的 repo 規則，也要同步更新。
+- 如果 skill 行為變更影響 [`LORE.md`](../../../LORE.md) 的 repo 規則，也要同步更新。
 - 如果 `git push` 需要認證，必須等待 browser auth 完成後再繼續。
 - 如果 submodule 未初始化，Step 1 會失敗；必須提示 `git submodule update --init`。
 - 如果 `origin/main` 不存在，必須確認上游 default branch 名稱，例如 `master`，再調整 fetch 指令。

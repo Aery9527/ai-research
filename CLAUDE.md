@@ -1,1 +1,1 @@
-@AGENTS.md
+@LORE.md

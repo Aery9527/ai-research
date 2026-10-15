@@ -1,0 +1,1 @@
+@LORE_ch.md

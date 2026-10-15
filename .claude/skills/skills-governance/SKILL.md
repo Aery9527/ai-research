@@ -25,7 +25,7 @@ description: >-
 ## Workflow
 
 1. 先搜尋影響面。必須用舊名稱、舊路徑、新名稱、新路徑與主題關鍵字掃描整個 repo。
-2. 在同一個 change slice 內修完所有過期資訊。嚴禁只改 skill 本體卻把 [`README.md`](../../../README.md)、[`AGENTS.md`](../../../AGENTS.md) 或相關入口文件留到之後。
+2. 在同一個 change slice 內修完所有過期資訊。嚴禁只改 skill 本體卻把 [`README.md`](../../../README.md)、[`LORE.md`](../../../LORE.md) 或相關入口文件留到之後。
 3. 定義 commit 邊界。一個 slice 必須只有單一目的，且可獨立 review、獨立回滾。
 4. Slice 一完成就 commit。若 worktree 有不相關修改，必須用 selective staging 或先 stash；嚴禁等待大雜燴 commit。
 5. 完成一個 slice 後，才能進下一個主題。
@@ -54,7 +54,7 @@ description: >-
 
 - 修改 [`.claude/skills/`](../) 或相關治理邊界時，至少檢查這些位置是否因本次變更而過期：
   - [`README.md`](../../../README.md)
-  - [`AGENTS.md`](../../../AGENTS.md)
+  - [`LORE.md`](../../../LORE.md) 與 [`LORE_ch.md`](../../../LORE_ch.md)
   - [`CLAUDE.md`](../../../CLAUDE.md)，如果專案級使用指引受影響
   - [`.claude/skills/`](../) 下的 project skill 或 shared protocol，如果入口或引用名稱受影響
   - [`.gitignore`](../../../.gitignore)、[`scripts/SCRIPTS.md`](../../../scripts/SCRIPTS.md)、migration docs、舊計畫文件，如果名稱或路徑變更讓它們過期
