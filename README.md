@@ -33,6 +33,7 @@ flowchart LR
   - [.claude-plugin 檔案說明](#claude-plugin-檔案說明)
   - [anthropic-skills](#anthropic-skills)
   - [webwright](#webwright)
+  - [codex-plugin-cc](#codex-plugin-cc)
 - [AI 工具文件](#ai-工具文件)
 - [Agent 與 Skill 差異](#agent-與-skill-差異)
 - [腳本文件](#腳本文件)
@@ -60,7 +61,7 @@ git submodule update --init --recursive
 
 > Dependabot 開 PR → email 通知 → invoke `sync-all` → pull + AI 摘要 + commit + push + 關閉 PR
 
-`sync-all` 只處理 [對應表](.claude/skills/sync-all/SKILL.md) 內有 sync skill 的上游，目前只有 `anthropic-skills`；`webwright` 沒有對應 sync skill，`sync-all` 會跳過它，需要另外處理。
+`sync-all` 只處理 [對應表](.claude/skills/sync-all/SKILL.md) 內有 sync skill 的上游，目前只有 `anthropic-skills`；`webwright`、`codex-plugin-cc` 沒有對應 sync skill，`sync-all` 會跳過它們，需要另外處理。
 
 [Back to top](#quick-navigation)
 
@@ -74,6 +75,7 @@ git submodule update --init --recursive
 |------|------|------|
 | `skill-source/anthropic-skills/` | [Anthropic 上游](https://github.com/anthropics/skills) | 創意設計、前端工程、AI 工程、Office 文件、技術寫作 |
 | `skill-source/webwright/` | [Microsoft Webwright 上游](https://github.com/microsoft/Webwright) | 瀏覽器自動化：以單一 bash command 驅動本地 Playwright workspace，附截圖與 action log 自我驗證 |
+| `skill-source/codex-plugin-cc/` | [OpenAI codex-plugin-cc 上游](https://github.com/openai/codex-plugin-cc) | Claude Code plugin：在 Claude Code 內呼叫 Codex 做 code review 或委派任務 |
 | `.claude/skills/` | 本地 project skills | 同步上游、同步 CLI 文件、治理 workflow、共用維運協議 |
 
 要確認 upstream skill 的用途時，直接讀取 [`skill-source/anthropic-skills/skills/`](skill-source/anthropic-skills/skills/) 下的原始 `SKILL.md`；真正執行時，使用已安裝的 upstream skill。
@@ -158,6 +160,23 @@ python -m playwright --version
 > [Webwright 官方 README](https://github.com/microsoft/Webwright) 仍列出 `codex plugin marketplace add microsoft/Webwright` → `/plugins` 的 plugin 安裝流程；但目前已有 [microsoft/Webwright issue #37](https://github.com/microsoft/Webwright/issues/37) 回報該 Git marketplace 缺少 Codex 會列舉的 `.agents/plugins/marketplace.json` index，導致 `webwright` 在 Codex plugin browser 內不可見。等上游補齊 marketplace index 後，再改回官方 plugin 流程。
 
 詳細設定見 [`skill-source/webwright/.claude-plugin/marketplace.json`](skill-source/webwright/.claude-plugin/marketplace.json)、[`skill-source/webwright/.claude-plugin/plugin.json`](skill-source/webwright/.claude-plugin/plugin.json) 與 [`skill-source/webwright/.codex-plugin/plugin.json`](skill-source/webwright/.codex-plugin/plugin.json)。
+
+[Back to top](#quick-navigation)
+
+---
+
+### codex-plugin-cc
+
+`codex-plugin-cc` 是 OpenAI 出品的 Claude Code plugin：在 Claude Code 內呼叫 Codex 做 code review（`/codex:review`、`/codex:adversarial-review`）或委派任務（`/codex:rescue`、`/codex:transfer`），並以 `/codex:status`、`/codex:result`、`/codex:cancel` 管理背景工作。上游只提供 Claude Code 用的 `.claude-plugin` manifest；使用前需要 Node.js 18.18 以上，以及 ChatGPT 訂閱或 OpenAI API key。
+
+| 維度 | Claude Code |
+|------|------|
+| 說明 | Marketplace source 是 `openai/codex-plugin-cc`，marketplace 名稱是 `openai-codex`，plugin 名稱是 `codex`。 |
+| 安裝 | `/plugin marketplace add openai/codex-plugin-cc`<br>`/plugin install codex@openai-codex`<br>`/reload-plugins`<br>`/codex:setup` |
+| 更新 | `/plugin marketplace update openai-codex`<br>`/reload-plugins` |
+| 移除 | `/plugin uninstall codex@openai-codex`<br>`/plugin marketplace remove openai-codex` |
+
+詳細設定見 [`skill-source/codex-plugin-cc/.claude-plugin/marketplace.json`](skill-source/codex-plugin-cc/.claude-plugin/marketplace.json) 與 [`skill-source/codex-plugin-cc/plugins/codex/.claude-plugin/plugin.json`](skill-source/codex-plugin-cc/plugins/codex/.claude-plugin/plugin.json)。
 
 [Back to top](#quick-navigation)
 
@@ -322,7 +341,8 @@ powershell -ExecutionPolicy Bypass -File .\cli-agents\install-sys-prompt.ps1
 ai-research/
 ├── skill-source/             # 上游 submodule 容器
 │   ├── anthropic-skills/     # Anthropic 上游 skills submodule
-│   └── webwright/            # Microsoft Webwright 瀏覽器代理 submodule
+│   ├── webwright/            # Microsoft Webwright 瀏覽器代理 submodule
+│   └── codex-plugin-cc/      # OpenAI Codex plugin for Claude Code submodule
 ├── cli-agents/               # 各 CLI agent 的參考文件與使用者級別設定範本
 │   ├── claude-code/          # Claude Code CLI 參考
 │   │   └── .claude/          # 使用者級別設定範本（複製到 ~/.claude/ 生效）

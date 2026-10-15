@@ -4,3 +4,6 @@
 [submodule "webwright"]
 	path = skill-source/webwright
 	url = https://github.com/microsoft/Webwright.git
+[submodule "codex-plugin-cc"]
+	path = skill-source/codex-plugin-cc
+	url = https://github.com/openai/codex-plugin-cc.git
