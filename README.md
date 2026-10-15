@@ -28,7 +28,7 @@ git submodule update --init --recursive
 
 - 本 repo 本身不是可安裝的 plugin，而是研究筆記、設定範本與維護流程的集合。
 - 上游專案以 git submodule 放在 [upstream](upstream/UPSTREAM.md)，由 Dependabot 偵測更新、`sync-all` 同步；本 repo 不直接修改上游內容。
-- 給 AI agent 的工作規則看 [AGENTS_zhTW.md](AGENTS_zhTW.md)。
+- 給 AI agent 的工作規則看 [AGENTS_ch.md](AGENTS_ch.md)。
 
 ```mermaid
 flowchart LR

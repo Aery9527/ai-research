@@ -20,7 +20,7 @@
 
 | 文件                                                                                | 說明                                                                                                         |
 |-------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| [common-prompt.md](common-prompt.md) / [common-prompt_zhTW.md](common-prompt_zhTW.md) | 可追加到 Claude Code、Codex 等 AI 工具設定檔的共用基本守則，包含語言偏好、工作態度與禁止行為                 |
+| [common-prompt.md](common-prompt.md) / [common-prompt_ch.md](common-prompt_ch.md) | 可追加到 Claude Code、Codex 等 AI 工具設定檔的共用基本守則，包含語言偏好、工作態度與禁止行為                 |
 | [hooks-cross-tool.md](hooks-cross-tool.md)                                          | 比較 Claude Code、GitHub Copilot CLI、Codex CLI 的 hook 核心差異，並整理共用 plugin skill + hook 的封裝策略  |
 | [claude-code/cc-cli.md](claude-code/cc-cli.md)                                      | Claude Code：CLI 參數、slash commands、快捷鍵，以及 built-in / custom agent 用法                             |
 | [github-copilot/gc-cli.md](github-copilot/gc-cli.md)                                | GitHub Copilot CLI：CLI 參數、slash commands、custom instructions，以及 built-in / custom agent 用法         |

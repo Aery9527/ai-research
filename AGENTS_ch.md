@@ -14,7 +14,7 @@
 
 ## 注意事項
 
-- `AGENTS.md` 是英文主版，`AGENTS_zhTW.md` 是繁體中文對照版；任一檔案有變更時，必須在同一個 change slice 內同步更新兩版，嚴禁先改一版、之後再補另一版。
+- `AGENTS.md` 是英文主版，`AGENTS_ch.md` 是繁體中文對照版；任一檔案有變更時，必須在同一個 change slice 內同步更新兩版，嚴禁先改一版、之後再補另一版。
 - 新增、移除、重新命名或明顯改動 [scripts](scripts/) 底下的腳本時，必須在同一個 slice 更新 [SCRIPTS.md](scripts/SCRIPTS.md)；新增的腳本至少必須記錄用途、參數、行為、風險或副作用，以及最小使用範例。
 - 腳本變更使 [README.md](README.md) 列出的腳本入口或摘要過期時，必須在同一個 slice 更新 README.md。
 - 新增、移除或明顯改動 [cli-agents](cli-agents/) 或 [tool](tool/) 底下的一鍵安裝腳本時，必須在同一個 slice 更新 [CLI-AGENTS.md](cli-agents/CLI-AGENTS.md) 的一鍵安裝腳本表。

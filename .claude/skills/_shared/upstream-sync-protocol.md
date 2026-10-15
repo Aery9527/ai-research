@@ -83,7 +83,7 @@ NEW_HEAD=$(git -C {{SUBMODULE_PATH}} rev-parse --short HEAD)
 依本次上游變更（包含 `NEW_SKILLS` 與 skill 行為變更），逐項檢查下列文件；受影響者必須同步更新：
 
 1. [`AGENTS.md`](../../../AGENTS.md)，如果 repo 規則或目錄結構受到影響
-2. [`AGENTS_zhTW.md`](../../../AGENTS_zhTW.md)，如果 [`AGENTS.md`](../../../AGENTS.md) 有語意變更
+2. [`AGENTS_ch.md`](../../../AGENTS_ch.md)，如果 [`AGENTS.md`](../../../AGENTS.md) 有語意變更
 3. [`README.md`](../../../README.md)，如果公開導覽或目錄結構受到影響
 4. [`upstream/UPSTREAM.md`](../../../upstream/UPSTREAM.md)，如果上游清單、用途或安裝方式受到影響
 
