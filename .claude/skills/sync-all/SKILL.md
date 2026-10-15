@@ -43,10 +43,10 @@ gh pr list \
 
 ## Step 2 — 解析 submodule 名稱
 
-從 `headRefName` 中移除前綴 `dependabot/submodules/` 得到 submodule path（路徑前綴為 `upstream/`）：
+從 `headRefName` 中移除前綴 `dependabot/submodules/`，再移除 Dependabot 附加在結尾的 `-<短 commit sha>`（regex `-[0-9a-f]{7,40}$`），得到 submodule path（路徑前綴為 `upstream/`）：
 
 ```
-dependabot/submodules/upstream/anthropic-skills  →  upstream/anthropic-skills
+dependabot/submodules/upstream/anthropic-skills-41bbe19  →  upstream/anthropic-skills
 ```
 
 ## Step 3 — 使用固定 sync skill 對應表

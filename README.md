@@ -127,7 +127,7 @@ Claude Code plugin 系統在 `.claude-plugin/` 目錄下有兩種設定檔，職
 |------|------|------|------|
 | 說明 | Marketplace source 是 `microsoft/Webwright`，marketplace 與 plugin 名稱皆為 `webwright`。 | Copilot CLI 讀取相同 Claude 風格 marketplace，透過 `copilot plugin` 註冊與安裝。 | 優先用 Codex 的 user-level skill discovery，把 Webwright skill junction 到 `~/.agents/skills/webwright`。 |
 | 安裝 | `/plugin marketplace add microsoft/Webwright`<br>`/plugin install webwright@webwright`<br>`/reload-plugins` | `copilot plugin marketplace add microsoft/Webwright`<br>`copilot plugin install webwright@webwright`<br>`copilot plugin list` | 建立 `~/.agents/skills/webwright` junction，並安裝 Webwright runtime；完整 PowerShell 流程見下方。 |
-| 更新 | `/plugin marketplace update webwright`<br>`/reload-plugins` | `copilot plugin update webwright@webwright` | 更新 submodule 後重新開 Codex；junction 會指向新的 submodule 內容。 |
+| 更新 | `/plugin marketplace update webwright`<br>`/reload-plugins` | `copilot plugin update webwright@webwright` | 更新 submodule 後重新開 Codex；junction 會指向新的 submodule 內容。若 submodule 路徑變更，重新執行下方流程，它會重建 junction 並重新安裝 editable runtime。 |
 | 移除 | `/plugin uninstall webwright@webwright`<br>`/plugin marketplace remove webwright` | `copilot plugin uninstall webwright@webwright`<br>`copilot plugin marketplace remove webwright` | 刪除 `~/.agents/skills/webwright` junction；可選擇保留或移除 Python runtime。 |
 
 Codex 建議使用下列 skill-only 安裝流程：
@@ -138,7 +138,12 @@ git submodule update --init --recursive
 $skillTarget = Resolve-Path "upstream\webwright\skills\webwright"
 $skillLink = Join-Path $env:USERPROFILE ".agents\skills\webwright"
 New-Item -ItemType Directory -Force -Path (Split-Path $skillLink) | Out-Null
-if (-not (Test-Path $skillLink)) {
+$existing = Get-Item -LiteralPath $skillLink -Force -ErrorAction SilentlyContinue
+if ($existing -and $existing.LinkType -eq 'Junction') {
+    cmd /c rmdir "$skillLink"
+    $existing = $null
+}
+if (-not $existing) {
     New-Item -ItemType Junction -Path $skillLink -Target $skillTarget.Path | Out-Null
 }
 
@@ -186,7 +191,7 @@ python -m playwright --version
 
 ### playwright-mcp
 
-`playwright-mcp` 是 Microsoft 出品的 MCP server（npm 套件 `@playwright/mcp`）：透過 Playwright 的 accessibility snapshot 讓 LLM 操作網頁，不需要截圖或視覺模型。上游沒有 plugin manifest 或 skill；Claude Code 官方 marketplace 的 `playwright` plugin 只是以 `npx @playwright/mcp@latest` 啟動此 MCP server 的包裝。使用前需要 Node.js 18 以上。
+`playwright-mcp` 是 Microsoft 出品的 MCP server（npm 套件 `@playwright/mcp`）：透過 Playwright 的 accessibility snapshot 讓 LLM 操作網頁，不需要截圖或視覺模型。上游沒有 plugin manifest，也沒有對外使用的 skill（`.claude/skills/release.md` 是上游內部的發版維護 skill）。Claude Code 官方 marketplace 的 `playwright` plugin 只含 `plugin.json` 與 `.mcp.json`，以 `npx @playwright/mcp@latest` 啟動此 MCP server，見 [`anthropics/claude-plugins-official/external_plugins/playwright`](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/playwright)。使用前需要 Node.js 18 以上。
 
 | 維度 | Claude Code | GitHub Copilot CLI | Codex |
 |------|------|------|------|
