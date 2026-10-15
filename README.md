@@ -34,6 +34,7 @@ flowchart LR
   - [anthropic-skills](#anthropic-skills)
   - [webwright](#webwright)
   - [codex-plugin-cc](#codex-plugin-cc)
+  - [playwright-mcp](#playwright-mcp)
 - [AI 工具文件](#ai-工具文件)
 - [Agent 與 Skill 差異](#agent-與-skill-差異)
 - [腳本文件](#腳本文件)
@@ -61,7 +62,7 @@ git submodule update --init --recursive
 
 > Dependabot 開 PR → email 通知 → invoke `sync-all` → pull + AI 摘要 + commit + push + 關閉 PR
 
-`sync-all` 只處理 [對應表](.claude/skills/sync-all/SKILL.md) 內有 sync skill 的上游，目前只有 `anthropic-skills`；`webwright`、`codex-plugin-cc` 沒有對應 sync skill，`sync-all` 會跳過它們，需要另外處理。
+`sync-all` 只處理 [對應表](.claude/skills/sync-all/SKILL.md) 內有 sync skill 的上游，目前只有 `anthropic-skills`；`webwright`、`codex-plugin-cc`、`playwright-mcp` 沒有對應 sync skill，`sync-all` 會跳過它們，需要另外處理。
 
 [Back to top](#quick-navigation)
 
@@ -76,6 +77,7 @@ git submodule update --init --recursive
 | `upstream/anthropic-skills/` | skill | [Anthropic 上游](https://github.com/anthropics/skills) | 創意設計、前端工程、AI 工程、Office 文件、技術寫作 |
 | `upstream/webwright/` | skill | [Microsoft Webwright 上游](https://github.com/microsoft/Webwright) | 瀏覽器自動化：以單一 bash command 驅動本地 Playwright workspace，附截圖與 action log 自我驗證 |
 | `upstream/codex-plugin-cc/` | Claude Code plugin | [OpenAI codex-plugin-cc 上游](https://github.com/openai/codex-plugin-cc) | 在 Claude Code 內呼叫 Codex 做 code review 或委派任務 |
+| `upstream/playwright-mcp/` | MCP server | [Microsoft playwright-mcp 上游](https://github.com/microsoft/playwright-mcp) | 瀏覽器自動化：以 Playwright accessibility snapshot 操作網頁 |
 | `.claude/skills/` | project skill | 本地 | 同步上游、同步 CLI 文件、治理 workflow、共用維運協議 |
 
 要確認 upstream skill 的用途時，直接讀取 [`upstream/anthropic-skills/skills/`](upstream/anthropic-skills/skills/) 下的原始 `SKILL.md`；真正執行時，使用已安裝的 upstream skill。
@@ -177,6 +179,23 @@ python -m playwright --version
 | 移除 | `/plugin uninstall codex@openai-codex`<br>`/plugin marketplace remove openai-codex` |
 
 詳細設定見 [`upstream/codex-plugin-cc/.claude-plugin/marketplace.json`](upstream/codex-plugin-cc/.claude-plugin/marketplace.json) 與 [`upstream/codex-plugin-cc/plugins/codex/.claude-plugin/plugin.json`](upstream/codex-plugin-cc/plugins/codex/.claude-plugin/plugin.json)。
+
+[Back to top](#quick-navigation)
+
+---
+
+### playwright-mcp
+
+`playwright-mcp` 是 Microsoft 出品的 MCP server（npm 套件 `@playwright/mcp`）：透過 Playwright 的 accessibility snapshot 讓 LLM 操作網頁，不需要截圖或視覺模型。上游沒有 plugin manifest 或 skill；Claude Code 官方 marketplace 的 `playwright` plugin 只是以 `npx @playwright/mcp@latest` 啟動此 MCP server 的包裝。使用前需要 Node.js 18 以上。
+
+| 維度 | Claude Code | GitHub Copilot CLI | Codex |
+|------|------|------|------|
+| 說明 | 可安裝官方 marketplace 的 `playwright` plugin，或直接以 `claude mcp add` 註冊 MCP server。 | 以 `/mcp add` 互動式註冊，或編輯 `~/.copilot/mcp-config.json`。 | 以 `codex mcp add` 註冊，或編輯 `~/.codex/config.toml` 的 `[mcp_servers.playwright]`。 |
+| 安裝 | `/plugin install playwright@claude-plugins-official`<br>`/reload-plugins`<br>或：<br>`claude mcp add playwright npx @playwright/mcp@latest` | `/mcp add` | `codex mcp add playwright npx "@playwright/mcp@latest"` |
+| 更新 | 設定使用 `@playwright/mcp@latest`，由 `npx` 在啟動 MCP server 時解析版本。 | 同左。 | 同左。 |
+| 移除 | `/plugin uninstall playwright@claude-plugins-official`<br>或：<br>`claude mcp remove playwright` | 從 `~/.copilot/mcp-config.json` 刪除 `playwright` 項目。 | `codex mcp remove playwright` |
+
+完整 client 設定與參數見 [`upstream/playwright-mcp/README.md`](upstream/playwright-mcp/README.md)。上游 README 也指出：coding agent 可改用 token 消耗較低的 [Playwright CLI + SKILLS](https://github.com/microsoft/playwright-cli)。
 
 [Back to top](#quick-navigation)
 
@@ -342,7 +361,8 @@ ai-research/
 ├── upstream/                 # 上游 submodule 容器（skill、plugin、MCP server 等）
 │   ├── anthropic-skills/     # Anthropic 上游 skills submodule
 │   ├── webwright/            # Microsoft Webwright 瀏覽器代理 submodule
-│   └── codex-plugin-cc/      # OpenAI Codex plugin for Claude Code submodule
+│   ├── codex-plugin-cc/      # OpenAI Codex plugin for Claude Code submodule
+│   └── playwright-mcp/       # Microsoft Playwright MCP server submodule
 ├── cli-agents/               # 各 CLI agent 的參考文件與使用者級別設定範本
 │   ├── claude-code/          # Claude Code CLI 參考
 │   │   └── .claude/          # 使用者級別設定範本（複製到 ~/.claude/ 生效）

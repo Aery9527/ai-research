@@ -7,3 +7,6 @@
 [submodule "codex-plugin-cc"]
 	path = upstream/codex-plugin-cc
 	url = https://github.com/openai/codex-plugin-cc.git
+[submodule "playwright-mcp"]
+	path = upstream/playwright-mcp
+	url = https://github.com/microsoft/playwright-mcp.git
