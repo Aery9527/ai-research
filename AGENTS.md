@@ -20,7 +20,6 @@ Purpose: track upstream AI tool skills and maintain local sync and governance wo
 ## Project Structure
 
 - [`skill-source/`](skill-source/) — Upstream skill sources — Contains skill libraries that come from GitHub as git submodules and remain the upstream targets this project tracks; agents MUST NOT modify upstream content directly.
-- [`skill-source-zhTW/`](skill-source-zhTW/) — Localized skill sources — Contains selected Traditional Chinese translations derived from upstream skill content when this project needs a localized copy.
 - [`.claude/skills/`](.claude/skills/) — Project skills — Contains local maintenance skills and shared protocols for this repo.
 - [`scripts/`](scripts/) — Local maintenance scripts — Contains repo maintenance and automation scripts; the document index lives in [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md).
 

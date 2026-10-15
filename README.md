@@ -16,7 +16,7 @@ flowchart LR
     end
 
     subgraph upstream ["上游來源層 (N 個 submodule)"]
-        S["📦 anthropic-skills\n📦 superpowers\n📦 …"]
+        S["📦 anthropic-skills\n📦 webwright\n📦 …"]
         P["🔄 _shared/upstream-sync-protocol"]
     end
 
@@ -32,7 +32,6 @@ flowchart LR
 - [Skills 系統](#skills-系統)
   - [.claude-plugin 檔案說明](#claude-plugin-檔案說明)
   - [anthropic-skills](#anthropic-skills)
-  - [superpowers](#superpowers)
   - [webwright](#webwright)
 - [AI 工具文件](#ai-工具文件)
 - [Agent 與 Skill 差異](#agent-與-skill-差異)
@@ -72,12 +71,10 @@ git submodule update --init --recursive
 | 目錄 | 來源 | 用途 |
 |------|------|------|
 | `skill-source/anthropic-skills/` | [Anthropic 上游](https://github.com/anthropics/skills) | 創意設計、前端工程、AI 工程、Office 文件、技術寫作 |
-| `skill-source/superpowers/` | [superpowers 上游](https://github.com/obra/superpowers) | 開發流程、Code Review、並行協作、Git 工作流、維運 |
 | `skill-source/webwright/` | [Microsoft Webwright 上游](https://github.com/microsoft/Webwright) | 瀏覽器自動化：以單一 bash command 驅動本地 Playwright workspace，附截圖與 action log 自我驗證 |
-| `skill-source-zhTW/` | 本地翻譯內容 | 依需要從 upstream skill 內容翻譯出的繁體中文版本 |
 | `.claude/skills/` | 本地 project skills | 同步上游、同步 CLI 文件、治理 workflow、共用維運協議 |
 
-要確認 upstream skill 的用途時，直接讀取 [`skill-source/anthropic-skills/skills/`](skill-source/anthropic-skills/skills/) / [`skill-source/superpowers/skills/`](skill-source/superpowers/skills/) 下的原始 `SKILL.md`；真正執行時，使用已安裝的 upstream skill。
+要確認 upstream skill 的用途時，直接讀取 [`skill-source/anthropic-skills/skills/`](skill-source/anthropic-skills/skills/) 下的原始 `SKILL.md`；真正執行時，使用已安裝的 upstream skill。
 
 ### 共用基礎設施
 
@@ -91,10 +88,6 @@ Claude Code plugin 系統在 `.claude-plugin/` 目錄下有兩種設定檔，職
 |------|------|------------|
 | `marketplace.json` | Marketplace 層 | 一個目錄清單：列出要發行哪些 plugins、各自來源與設定 |
 | `plugin.json` | Plugin 層 | 單個 plugin 的身份：`name`, `version`, `author`, `keywords`… |
-
-**為什麼 `superpowers/` 同時有兩個？**
-
-`superpowers` 身兼兩種角色：它本身是一個可安裝的 plugin（需要 `plugin.json` 聲明身份），同時也透過 `marketplace.json`（名為 `superpowers-dev`）作為 marketplace 發行自己。
 
 **為什麼 `anthropic-skills/` 只有 `marketplace.json`？**
 
@@ -119,56 +112,6 @@ Claude Code plugin 系統在 `.claude-plugin/` 目錄下有兩種設定檔，職
 詳細設定見 [`skill-source/anthropic-skills/.claude-plugin/marketplace.json`](skill-source/anthropic-skills/.claude-plugin/marketplace.json)。
 
 > **已知 bug**：若同一批 skills 同時由 project top-level entries 與 plugin namespace 暴露，context 與 slash command picker 仍可能重複。當前結構設計就是為了避免這個情況。相關 issue：[anthropics/claude-code#29520](https://github.com/anthropics/claude-code/issues/29520)、[anthropics/skills#189](https://github.com/anthropics/skills/issues/189)
-
-### superpowers
-
-`superpowers` 同時提供 Claude Code / GitHub Copilot CLI 的 plugin marketplace 入口，也提供 Codex 可用的 plugin / native skill discovery 安裝方式。
-
-| 維度 | Claude Code | GitHub Copilot CLI | Codex |
-|------|------|------|------|
-| 說明 | 可直接從官方 marketplace 安裝；若要使用 obra marketplace，marketplace source 是 `obra/superpowers-marketplace`。 | 使用 `obra/superpowers-marketplace` 註冊 marketplace，plugin 名稱是 `superpowers`。 | 可在 Codex 使用 `/plugins superpowers` 搜尋並安裝；若要本機 native skill discovery，依 [`skill-source/superpowers/.codex/INSTALL.md`](skill-source/superpowers/.codex/INSTALL.md) 使用 clone + junction。 |
-| 安裝 | `/plugin install superpowers@claude-plugins-official`<br>或：<br>`/plugin marketplace add obra/superpowers-marketplace`<br>`/plugin install superpowers@superpowers-marketplace`<br>`/reload-plugins` | `copilot plugin marketplace add obra/superpowers-marketplace`<br>`copilot plugin install superpowers@superpowers-marketplace`<br>`copilot plugin list` | `codex`<br>`/plugins superpowers`<br>選擇 `Install Plugin`<br>本機 discovery：<br>`git clone https://github.com/obra/superpowers.git "$env:USERPROFILE\.codex\superpowers"`<br>`New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.agents\skills"`<br>`New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\superpowers" -Target "$env:USERPROFILE\.codex\superpowers\skills"` |
-| 更新 | 官方 marketplace 可透過 `/plugin` 的 Marketplaces tab 或 auto-update 管理。若使用 obra marketplace：<br>`/plugin marketplace update superpowers-marketplace`<br>`/reload-plugins` | `copilot plugin update superpowers@superpowers-marketplace` | `/plugins` 內管理已安裝 plugin。若使用本機 discovery：<br>`git -C "$env:USERPROFILE\.codex\superpowers" pull` |
-| 移除 | `/plugin uninstall superpowers@claude-plugins-official`<br>或：<br>`/plugin uninstall superpowers@superpowers-marketplace`<br>`/plugin marketplace remove superpowers-marketplace` | `copilot plugin uninstall superpowers@superpowers-marketplace`<br>`copilot plugin marketplace remove superpowers-marketplace` | `/plugins` 內停用或移除 plugin。若使用本機 discovery：<br>`Remove-Item -Force "$env:USERPROFILE\.agents\skills\superpowers"`<br>可選：`Remove-Item -Recurse -Force "$env:USERPROFILE\.codex\superpowers"` |
-
-`using-superpowers` 是元技能（meta-skill），不參與任何具體工作流程，但它是所有流程的前提條件：收到任何任務前，哪怕只有 1% 機率有 skill 可用，就必須先呼叫 Skill tool 確認，再執行任何動作。
-
-典型開發流程：
-
-```mermaid
-flowchart TD
-    subgraph feature ["新功能開發"]
-        direction LR
-        wgw["using-git-worktrees"] --> bs["brainstorming"]
-        bs --> wp["writing-plans"]
-        wp --> sad["subagent-driven-development"]
-        wp --> ep["executing-plans"]
-        sad --> fdb["finishing-a-development-branch"]
-        ep --> fdb
-    end
-
-    subgraph per_task ["每個 task 內（subagent 執行）"]
-        direction LR
-        tdd["test-driven-development"] --> rcr["requesting-code-review"]
-    end
-    sad -.->|"逐 task"| per_task
-
-    dpa["dispatching-parallel-agents"] -.->|"獨立子任務"| sad
-
-    subgraph fix ["Bug Fix / Review 收到"]
-        direction LR
-        sd["systematic-debugging"]
-        rcvr["receiving-code-review"]
-    end
-    sd --> vbc["verification-before-completion"]
-    rcvr --> vbc
-
-    ws["writing-skills"]
-```
-
-[Back to top](#quick-navigation)
-
----
 
 ### webwright
 
@@ -377,9 +320,7 @@ powershell -ExecutionPolicy Bypass -File .\cli-agents\install-sys-prompt.ps1
 ai-research/
 ├── skill-source/             # 上游 submodule 容器
 │   ├── anthropic-skills/     # Anthropic 上游 skills submodule
-│   ├── superpowers/          # superpowers 上游 skills submodule
 │   └── webwright/            # Microsoft Webwright 瀏覽器代理 submodule
-├── skill-source-zhTW/         # upstream skill 內容的繁體中文翻譯
 ├── cli-agents/               # 各 CLI agent 的參考文件與使用者級別設定範本
 │   ├── claude-code/          # Claude Code CLI 參考
 │   │   └── .claude/          # 使用者級別設定範本（複製到 ~/.claude/ 生效）
@@ -394,7 +335,6 @@ ai-research/
 │   ├── _shared/              # 共用協議（upstream-sync-protocol）
 │   ├── skills-governance/    # project skill 治理規則
 │   ├── anthropic-skills-sync/ # Anthropic sync 維運 skill
-│   ├── superpowers-skills-sync/ # Superpowers sync 維運 skill
 │   ├── cli-doc-sync/         # CLI 文件同步工具
 │   └── sync-all/             # 統一 orchestrator：Dependabot PR → invoke 各 sync skill
 ├── .github/

@@ -10,14 +10,12 @@
 
 - `LIBRARY_NAME` — 庫的識別名稱。
   - Anthropic 範例：`anthropic-skills`
-  - superpowers 範例：`superpowers`
 - `SUBMODULE_PATH` — git submodule 相對路徑。
   - Anthropic 範例：`skill-source/anthropic-skills/`
-  - superpowers 範例：`skill-source/superpowers/`
 - `SKILL_SOURCE_PATTERN` — skill 來源路徑模式。
-  - 兩者皆為 `skills/<name>/SKILL.md`
+  - Anthropic 範例：`skills/<name>/SKILL.md`
 - `CO_AUTHOR` — commit 的 `Co-Authored-By` 值。
-  - 目前兩者皆使用 `Claude Sonnet 4.6 <noreply@anthropic.com>`
+  - Anthropic 範例：`Claude Sonnet 4.6 <noreply@anthropic.com>`
 
 ## Sync Workflow
 

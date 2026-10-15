@@ -47,7 +47,6 @@ gh pr list \
 
 ```
 dependabot/submodules/skill-source/anthropic-skills  →  skill-source/anthropic-skills
-dependabot/submodules/skill-source/superpowers       →  skill-source/superpowers
 ```
 
 ## Step 3 — 使用固定 sync skill 對應表
@@ -57,7 +56,6 @@ dependabot/submodules/skill-source/superpowers       →  skill-source/superpowe
 ```
 submodule path                    →  skill 目錄名稱
 "skill-source/anthropic-skills"   →  "anthropic-skills-sync"
-"skill-source/superpowers"        →  "superpowers-skills-sync"
 ```
 
 ## Step 4 — 比對並準備執行清單
