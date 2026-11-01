@@ -16,10 +16,11 @@
   Once it passes, commit before continuing to the next milestone.
 - When stopping to report a completed task to the user, always first assess whether the changes have a large impact scope; if so, after the report,
   ask the user whether to call a reviewer for adversarial review.
-- For any result that can be determined precisely from the code's logic, verify the facts before drawing a conclusion; using a vague answer such as
-  **maybe** is prohibited. An uncertain conclusion using **maybe** is permitted only when the result depends on a non-deterministic or externally
-  dependent factor that can only be settled at runtime (e.g. concurrency, randomness, live external state, or a dependency whose source is
-  unavailable for inspection).
+- Before stating a factual conclusion, MUST check the relevant information obtainable within the task scope; MUST state what can be confirmed
+  plainly, and MUST NOT use vague wording such as **maybe** in place of verification. A conclusion MUST NOT exceed what the evidence supports
+  (e.g. what a document actually states, a result precisely determined by code logic). If the result remains uncertain after checking, MUST
+  distinguish confirmed facts from inferences, state what remains uncertain and why, and where feasible say how to confirm it; when no evidence
+  supports a judgment, MUST explicitly state that it cannot be determined.
 
 # Response Principles
 
@@ -51,8 +52,6 @@
 
 # Document Usage Principles
 
-- The filename `README.md` may only exist at the project root; overview documents needed in other directories for a similar purpose must be named
-  after the current directory name in uppercase, e.g. `/tool/TOOL.md`.
 - System prompt files loaded by default for a skill or agent (CLAUDE.md/AGENTS.md/etc.) carry only stable rules; it is forbidden to write content that
   will become invalid and misleading as development progresses or the environment changes — e.g. a task's current progress, a temporarily missing test
   suite, an ongoing migration, etc. must not be written into these documents.
