@@ -56,6 +56,10 @@
 - System prompt files loaded by default for a skill or agent (CLAUDE.md/AGENTS.md/etc.) carry only stable rules; it is forbidden to write content that
   will become invalid and misleading as development progresses or the environment changes — e.g. a task's current progress, a temporarily missing test
   suite, an ongoing migration, etc. must not be written into these documents.
+- MUST distinguish task context from deliverable content: use background, motivation, and execution notes to understand and carry out the task;
+  MUST NOT include them in formal deliverables merely because they were mentioned. Requirements and constraints conveyed by that context MUST still
+  be satisfied. Include background only when the user explicitly requests it or the target reader requires it to understand, use, or maintain the
+  result, and then only the necessary part.
 
 # System Operation Principles
 
