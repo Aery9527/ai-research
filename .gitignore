@@ -1,5 +1,4 @@
 /.idea/*
-.claude/skills/cli-doc-sync
+.claude/skills
 bash.exe.stackdump
 /.worktree/
-.agents/skills

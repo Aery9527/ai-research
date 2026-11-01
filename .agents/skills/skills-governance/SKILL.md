@@ -7,18 +7,18 @@ description: >-
 
 # Skills Governance
 
-治理本 repo 內的 project skills，特別是 [`.claude/skills/`](../) 下的可執行 workflow skills，以及與其直接相關的文件同步、目錄邊界與 commit slice 規則。
+治理本 repo 內的 project skills，特別是 [`.agents/skills/`](../) 下的可執行 workflow skills，以及與其直接相關的文件同步、目錄邊界與 commit slice 規則。
 
 ## Directory Boundaries
 
-- [`.claude/skills/`](../) — project skills — 放本 repo 執行維護任務時需要的 sync skill、CLI 文件同步 skill、治理 workflow 與共用協議。
+- [`.agents/skills/`](../) — project skills — 放本 repo 執行維護任務時需要的 sync skill、CLI 文件同步 skill、治理 workflow 與共用協議。
 - [`upstream/`](../../../upstream/) — upstream submodule container — 集中存放上游專案（skill、plugin、MCP server 或其他工具）的 git submodule；嚴禁直接修改上游內容。
 - [`upstream/anthropic-skills/`](../../../upstream/anthropic-skills/) — upstream submodule — 放上游 skills 原始內容；除同步任務外，不承擔本 repo 治理規則。
 
 ## Placement Rules
 
-- 如果內容是本 repo 專用且需要被 agent 執行的 workflow skill，必須放在 [`.claude/skills/`](../)。
-- 如果內容是在調整 sync 流程、CLI 文件同步流程、治理 workflow 或 shared protocol，必須放在 [`.claude/skills/`](../)。
+- 如果內容是本 repo 專用且需要被 agent 執行的 workflow skill，必須放在 [`.agents/skills/`](../)。
+- 如果內容是在調整 sync 流程、CLI 文件同步流程、治理 workflow 或 shared protocol，必須放在 [`.agents/skills/`](../)。
 - 如果內容只是協助選擇或解釋 upstream skill，應優先讀取 [`upstream/`](../../../upstream/) 內的上游 `SKILL.md`，嚴禁為此建立 project skill。
 - 如果規則離開此 repo 就失去意義，嚴禁塞進 upstream submodule。
 
@@ -40,7 +40,7 @@ description: >-
 
 - 預設格式：`<type>(<scope>): <summary>`。
 - 建議 scope：
-  - `claude-skills` — 修改 [`.claude/skills/`](../) project skill 或 shared protocol。
+  - `claude-skills` — 修改 [`.agents/skills/`](../) project skill 或 shared protocol。
   - `docs` — 以文件索引與說明同步為主。
 - 類型選擇：
   - `feat` — 新增 skill、擴充能力、擴大規則覆蓋面。
@@ -52,11 +52,11 @@ description: >-
 
 ## Documentation And Metadata Sync
 
-- 修改 [`.claude/skills/`](../) 或相關治理邊界時，至少檢查這些位置是否因本次變更而過期：
+- 修改 [`.agents/skills/`](../) 或相關治理邊界時，至少檢查這些位置是否因本次變更而過期：
   - [`README.md`](../../../README.md)
   - [`LORE.md`](../../../LORE.md) 與 [`LORE_ch.md`](../../../LORE_ch.md)
   - [`CLAUDE.md`](../../../CLAUDE.md)，如果專案級使用指引受影響
-  - [`.claude/skills/`](../) 下的 project skill 或 shared protocol，如果入口或引用名稱受影響
+  - [`.agents/skills/`](../) 下的 project skill 或 shared protocol，如果入口或引用名稱受影響
   - [`.gitignore`](../../../.gitignore)、[`scripts/SCRIPTS.md`](../../../scripts/SCRIPTS.md)、migration docs、舊計畫文件，如果名稱或路徑變更讓它們過期
 - 原則不是每次全改，而是所有被這次修改弄成不準確的地方都必須在同一個 slice 內修完。
 

@@ -3,3 +3,4 @@
 # scripts Bash has to parse, breaking them on the exact fresh-machine installs this
 # directory exists for.
 cli-agents/claude-code/**/*.sh text eol=lf
+scripts/link-agent-skills.sh text eol=lf

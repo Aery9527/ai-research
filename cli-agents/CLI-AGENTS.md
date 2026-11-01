@@ -120,7 +120,7 @@ powershell -ExecutionPolicy Bypass -File .\cli-agents\install-sys-prompt.ps1
 | tool / MCP          | 實際能力來源，例如讀檔、改檔、查 GitHub、操作外部服務        |
 
 - 實務上比較穩的設計：**把知識與流程放 skill，把角色、權限與執行邊界放 agent**。
-- 例如本 repo 的 [.claude/skills](../.claude/skills/) 收的就是 repo 專用 skills，不是 agents。
+- 例如本 repo 的 [.agents/skills](../.agents/skills/) 收的就是 repo 專用 skills，不是 agents。
 
 ### Claude Code 與 GitHub Copilot 的差異
 
@@ -147,7 +147,7 @@ powershell -ExecutionPolicy Bypass -File .\cli-agents\install-sys-prompt.ps1
 
 ### 這個 repo 目前怎麼看
 
-1. [.claude/skills](../.claude/skills/) 是本 repo 的 **project skill 生態**，只放本 repo 執行維護任務時需要的 workflow。
+1. [.agents/skills](../.agents/skills/) 是本 repo 的 **project skill 生態**，只放本 repo 執行維護任務時需要的 workflow。
 2. 本目錄整理各工具的 CLI、agent 建立、使用與能力邊界。
 3. 若未來要新增可分發的 plugin / marketplace，兩邊都做得到，但不應假設一份 agent 定義可直接跨兩邊共用。
 4. 設計新能力時猶豫該做 agent 還是 skill，先問：**我要的是專家，還是手冊？** 要專家就做 agent；要手冊就做 skill。

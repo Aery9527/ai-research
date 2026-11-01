@@ -16,12 +16,12 @@ description: >-
 
 - 位置：[fetch_docs.py](fetch_docs.py)
 - 首次使用可安裝依賴：`pip install requests markdownify`
-- 列出可用目標：`python .claude/skills/cli-doc-sync/fetch_docs.py --list`
+- 列出可用目標：`python .agents/skills/cli-doc-sync/fetch_docs.py --list`
 - 抓取目標：
-  - `python .claude/skills/cli-doc-sync/fetch_docs.py claude-code`
-  - `python .claude/skills/cli-doc-sync/fetch_docs.py github-copilot`
-  - `python .claude/skills/cli-doc-sync/fetch_docs.py codex-cli`
-- 抓取單一 URL：`python .claude/skills/cli-doc-sync/fetch_docs.py --url "https://..."`
+  - `python .agents/skills/cli-doc-sync/fetch_docs.py claude-code`
+  - `python .agents/skills/cli-doc-sync/fetch_docs.py github-copilot`
+  - `python .agents/skills/cli-doc-sync/fetch_docs.py codex-cli`
+- 抓取單一 URL：`python .agents/skills/cli-doc-sync/fetch_docs.py --url "https://..."`
 
 ### JSON Output Contract
 
