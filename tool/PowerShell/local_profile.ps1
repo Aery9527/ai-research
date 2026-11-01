@@ -9,12 +9,12 @@ function aws { # golang workspace: GolandProjects
     cd (Join-Path $HOME "AeryProjects")
 }
 
-function gws { # golang workspace: GolandProjects
-    cd (Join-Path $HOME "GolandProjects")
+function gws { # golang workspace: GolangProjects
+    cd (Join-Path $HOME "GolangProjects")
 }
 
-function jws { # java workspace: IdeaProjects
-    cd (Join-Path $HOME "IdeaProjects")
+function jws { # java workspace: JavaProjects
+    cd (Join-Path $HOME "JavaProjects")
 }
 
 # agent cli
