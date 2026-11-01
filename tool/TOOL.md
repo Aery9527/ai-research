@@ -32,7 +32,7 @@ flowchart TD
 |------|------|
 | [`PowerShell/POWERSHELL.md`](PowerShell/POWERSHELL.md) | 安裝部署、profile 載入與捷徑腳本呼叫流程（Mermaid） |
 | [`PowerShell/Microsoft.PowerShell_profile.ps1`](PowerShell/Microsoft.PowerShell_profile.ps1) | PowerShell profile 入口（隨 OneDrive 同步）；若 `$HOME\.config\powershell\local_profile.ps1` 存在就載入它 |
-| [`PowerShell/local_profile.ps1`](PowerShell/local_profile.ps1) | 共用指令定義；提供 `gws`/`jws` 工作目錄切換，以及 `acc`/`agc`/`acx`、`gcc`/`ggc`/`gcx`、`jcc`/`jgc`/`jcx` 等捷徑函數，內部用 `$ToolRoot`（= `$HOME\.config\powershell`）定位同目錄的 `Exe-*.ps1` / `Set-*.ps1` |
+| [`PowerShell/local_profile.ps1`](PowerShell/local_profile.ps1) | 共用指令定義；提供 `ll` 詳細清單（含隱藏項目）、`gws`/`jws` 工作目錄切換，以及 `acc`/`agc`/`acx`、`gcc`/`ggc`/`gcx`、`jcc`/`jgc`/`jcx` 等捷徑函數，內部用 `$ToolRoot`（= `$HOME\.config\powershell`）定位同目錄的 `Exe-*.ps1` / `Set-*.ps1` |
 | [`PowerShell/Exe-CC.ps1`](PowerShell/Exe-CC.ps1) | 執行 Claude Code：`claude --permission-mode bypassPermissions @args` |
 | [`PowerShell/Exe-GC.ps1`](PowerShell/Exe-GC.ps1) | 執行 GitHub Copilot CLI：`copilot --allow-all-tools @args` |
 | [`PowerShell/Exe-CX.ps1`](PowerShell/Exe-CX.ps1) | 執行 Codex CLI：`codex --sandbox danger-full-access -a never @args` |

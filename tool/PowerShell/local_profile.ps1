@@ -1,7 +1,12 @@
-
+﻿
 # All tool/PowerShell scripts are deployed together into $HOME\.config\powershell,
 # so sibling scripts are looked up there rather than via $PSScriptRoot.
 $ToolRoot = Join-Path $HOME ".config\powershell"
+
+# 列出包含隱藏項目的詳細清單，並轉交 PowerShell 查詢參數。
+function ll {
+    Get-ChildItem -Force @args
+}
 
 # workspace
 

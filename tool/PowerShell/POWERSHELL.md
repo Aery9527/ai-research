@@ -6,6 +6,7 @@
 
 - [安裝與部署](#安裝與部署)
 - [啟動與載入](#啟動與載入)
+- [檔案清單捷徑](#檔案清單捷徑)
 - [AI CLI 呼叫順序](#ai-cli-呼叫順序)
 - [工作目錄捷徑](#工作目錄捷徑)
 
@@ -46,6 +47,26 @@ flowchart TD
 - `ToolRoot` 固定為 `$HOME/.config/powershell`，後續捷徑均從此處載入腳本。
 - 載入 profile 只定義捷徑；使用者呼叫 AI CLI 捷徑時，才設定開發環境並啟動 CLI。
 - 使用 `pwsh -NoProfile` 時不會自動執行此流程。
+
+[回到目錄](#table-of-contents)
+
+---
+
+## 檔案清單捷徑
+
+- [local_profile.ps1](local_profile.ps1) 提供 `ll`，執行 `Get-ChildItem -Force`，在終端顯示包含隱藏項目的詳細清單；欄位採 PowerShell 預設格式。
+- 參數沿用 `Get-ChildItem`，不使用 Linux `ls` 的 `-l`、`-a` 等參數；輸出保留原始物件，可接續管線處理。
+
+| 指令 | 用途 |
+|---|---|
+| `ll` | 列出目前目錄，包含隱藏檔案與目錄。 |
+| `ll 'C:\Program Files'` | 列出指定目錄，支援含空白的路徑。 |
+| `ll -File` | 只列出檔案，包含隱藏檔。 |
+| `ll -Directory` | 只列出目錄，包含隱藏目錄。 |
+| `ll *.ps1` | 使用萬用字元篩選檔案。 |
+| `ll -File \| Sort-Object Length -Descending` | 依檔案大小由大到小排序。 |
+
+- 更新後執行 [install.ps1](install.ps1) 部署，再開啟新的 PowerShell 7；目前工作階段可執行 `. $PROFILE` 重新載入。
 
 [回到目錄](#table-of-contents)
 
