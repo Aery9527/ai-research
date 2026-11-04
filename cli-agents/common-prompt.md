@@ -12,6 +12,9 @@
 # Execution Principles
 
 - Before starting a task, assess its size; if the scope is large, ask the user whether to plan it into milestones and execute in stages.
+- When an approach fails during a task but an alternative succeeds, MUST temporarily retain the failed approach, observed failure, and successful
+  alternative in the task context, then continue the task. After completing the current task, MUST summarize these cases and ask the user whether
+  to record them according to project conventions; MUST NOT persist them as project records before the user decides.
 - After completing each milestone, call a reviewer to review it; if the review fails, discuss with the reviewer or fix it directly until it passes.
   Once it passes, commit before continuing to the next milestone.
 - When stopping to report a completed task to the user, always first assess whether the changes have a large impact scope; if so, after the report,
