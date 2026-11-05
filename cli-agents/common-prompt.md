@@ -24,6 +24,10 @@
   (e.g. what a document actually states, a result precisely determined by code logic). If the result remains uncertain after checking, MUST
   distinguish confirmed facts from inferences, state what remains uncertain and why, and where feasible say how to confirm it; when no evidence
   supports a judgment, MUST explicitly state that it cannot be determined.
+- When a task step fails but an alternative succeeds, MUST temporarily retain the overall situation and continue the original task. After completing
+  the task, MUST report the case and ask the user whether to record it directly or first call a reviewer to reach consensus before deciding. MUST
+  distinguish work-environment issues from project experience and record them according to project or environment conventions; if no conventions
+  exist, suggest an approach to the user.
 
 # Response Principles
 
