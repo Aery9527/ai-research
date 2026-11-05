@@ -1,14 +1,12 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
-    Bootstrap Codex CLI on this machine: npm, the Codex CLI, then the pet sprites.
-
+    以 npm 安裝或更新 Codex CLI，並部署 pets。
 .DESCRIPTION
-    1. Ensures npm is available: installs Node.js LTS via winget if missing,
-       or runs `winget upgrade` on the existing Node.js LTS package if npm was installed via winget.
-    2. Installs/updates the Codex CLI via `npm install -g @openai/codex`.
-    3. Copies pets\ (next to this script) to ~/.codex/pets/.
-
+    檢查 Node.js/npm；只在兩者皆缺少時用 winget 安裝 Node.js LTS。
+    既有 Node.js/npm 由原安裝方式管理，不自動升級。
+    安裝時強制遵守套件 engines 並包含 optional dependencies。
+    確認實際指令來源與版本後，才複製 pets；覆蓋同名檔案，不刪除額外檔案。
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\cli-agents\codex\install-cx.ps1
 #>
@@ -17,67 +15,37 @@
 param()
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot '..\install-cli-common.ps1')
 
-$nodePackageId = 'OpenJS.NodeJS.LTS'
+# 確認來源與 runtime，安裝成功且指令可用後才部署使用者素材。
+function Install-CodexCli {
+    $petsSource = Join-Path $PSScriptRoot 'pets'
+    if (-not (Test-Path -LiteralPath $petsSource -PathType Container)) { throw "找不到 pets 來源：$petsSource" }
 
-Write-Host '=== Step 1: npm ===' -ForegroundColor Cyan
+    Write-Host '=== Step 1: Node.js/npm ===' -ForegroundColor Cyan
+    Initialize-CliNode -RequireNpm
+    $npmCommand = Get-Command npm.cmd -CommandType Application -ErrorAction Stop | Select-Object -First 1
+    $npmPrefix = (@(Invoke-CliNative $npmCommand.Source @('prefix', '-g')) -join '').Trim()
+    if (-not $npmPrefix) { throw 'npm prefix -g 沒有回傳安裝位置。' }
 
-if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    Write-Host '  [X] ERROR: winget not found. Install Node.js manually, then re-run this script.' -ForegroundColor Red
-    exit 1
+    Write-Host '=== Step 2: Codex CLI ===' -ForegroundColor Cyan
+    Invoke-CliNative $npmCommand.Source @('install', '-g', '--engine-strict', '--include=optional', '@openai/codex') | Out-Host
+    $codexExecutable = Join-Path $npmPrefix 'codex.cmd'
+    if (-not (Test-Path -LiteralPath $codexExecutable -PathType Leaf)) { throw "找不到 npm 指令：$codexExecutable" }
+    Assert-CliVersion $codexExecutable 'Codex CLI'
+    Register-CliUserPath $npmPrefix
+    Assert-CliCommandSource 'codex' $npmPrefix
+
+    Write-Host '=== Step 3: pets ===' -ForegroundColor Cyan
+    $petsDestination = Join-Path $env:USERPROFILE '.codex\pets'
+    New-Item -ItemType Directory -Path $petsDestination -Force | Out-Null
+    Copy-Item -Path (Join-Path $petsSource '*') -Destination $petsDestination -Recurse -Force
+    Write-Host "[OK] Codex CLI 安裝完成，pets 已複製至 $petsDestination" -ForegroundColor Green
 }
 
-if (Get-Command npm -ErrorAction SilentlyContinue) {
-    winget list -e --id $nodePackageId | Out-Null
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host '  [!] npm already installed via winget, checking for updates...' -ForegroundColor Yellow
-        winget upgrade -e --id $nodePackageId --silent --accept-package-agreements --accept-source-agreements
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host '  [OK] Node.js/npm is up to date.' -ForegroundColor Green
-        } else {
-            Write-Host "  [!] winget upgrade exited with code $LASTEXITCODE (likely already the latest version)." -ForegroundColor Yellow
-        }
-    } else {
-        Write-Host '  [!] npm already installed but not via winget (e.g. nvm or a manual install) - leaving it as-is, no update attempted.' -ForegroundColor Yellow
-    }
-} else {
-    Write-Host '  [!] npm not found, installing Node.js LTS via winget...' -ForegroundColor Yellow
-    winget install -e --id $nodePackageId --silent --accept-package-agreements --accept-source-agreements
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "  [X] ERROR: winget install failed with code $LASTEXITCODE (if this is a machine-scope install, try re-running from an elevated terminal)" -ForegroundColor Red
+if ($MyInvocation.InvocationName -ne '.') {
+    try { Install-CodexCli } catch {
+        Write-Host "[X] ERROR: $_" -ForegroundColor Red
         exit 1
     }
-    Write-Host '  [OK] Node.js/npm installed.' -ForegroundColor Green
 }
-
-# winget updates the machine/user PATH in the registry, not this process's $env:Path;
-# append the fresh values so a newly installed npm is usable without opening a new terminal.
-$env:Path = "$env:Path;$([System.Environment]::GetEnvironmentVariable('Path', 'Machine'));$([System.Environment]::GetEnvironmentVariable('Path', 'User'))"
-
-if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-    Write-Host '  [X] ERROR: npm still not found after installation. Open a new terminal and re-run this script.' -ForegroundColor Red
-    exit 1
-}
-
-Write-Host '=== Step 2: Codex CLI ===' -ForegroundColor Cyan
-npm install -g @openai/codex
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "  [X] ERROR: npm install -g @openai/codex failed with code $LASTEXITCODE" -ForegroundColor Red
-    exit 1
-}
-Write-Host '  [OK] Codex CLI installed/updated.' -ForegroundColor Green
-
-Write-Host '=== Step 3: pets ===' -ForegroundColor Cyan
-$petsSrc = Join-Path $PSScriptRoot 'pets'
-$petsDst = Join-Path $env:USERPROFILE '.codex\pets'
-
-if (-not (Test-Path -LiteralPath $petsSrc -PathType Container)) {
-    Write-Host "  [X] ERROR: pets source not found: $petsSrc" -ForegroundColor Red
-    exit 1
-}
-New-Item -ItemType Directory -Path $petsDst -Force | Out-Null
-Copy-Item -Path (Join-Path $petsSrc '*') -Destination $petsDst -Recurse -Force
-Write-Host "  [OK] Copied: $petsSrc -> $petsDst" -ForegroundColor Green
-
-Write-Host ''
-Write-Host 'Done.' -ForegroundColor Green

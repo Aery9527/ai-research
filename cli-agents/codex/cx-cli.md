@@ -31,9 +31,10 @@
 ---
 
 - 安裝：`npm install -g @openai/codex`，或 `brew install --cask codex`
-- 更新：`codex update`；若為 npm 全域安裝，也可用 `npm update -g @openai/codex`
+- 更新：npm 全域安裝使用 `npm install -g @openai/codex`；Homebrew 安裝使用 `brew upgrade --cask codex`。
 - 移除：若為 npm 全域安裝可用 `npm uninstall -g @openai/codex`；若為 Homebrew 安裝可用 `brew uninstall --cask codex`
 - 來源：
+  - [安裝與更新](https://learn.chatgpt.com/docs/codex/cli)
   - [Codex Overview](https://developers.openai.com/codex)
   - [CLI Reference](https://developers.openai.com/codex/cli/reference)
   - [Slash Commands](https://developers.openai.com/codex/cli/slash-commands)
@@ -55,10 +56,11 @@ flowchart LR
 
 ## 更新時間與差異總結
 
-- 更新時間：`2026-05-13 10:09 UTC`
-- 比較基準：上一版本地文件（補 `Hook 機制` 前）
+- 更新時間：`2026-11-05`（Asia/Taipei）。
+- 比較基準：本次修改前的安裝與更新說明；僅核對安裝相關段落，未重新查核其餘 CLI 參考。
 - 差異摘要：
-  - 新增「Hook 機制」章節，整理 Codex CLI hook feature flag、設定位置、官方完整事件清單與目前攔截限制。
+    - 確認 npm 安裝仍受官方支援，更新指令對齊 `npm install -g @openai/codex`。
+    - 補上 Windows 安裝器的套件引擎檢查、CLI 來源與版本驗證。
 
 [Back to top](#quick-navigation)
 
@@ -73,6 +75,8 @@ npm install -g @openai/codex
 # Homebrew
 brew install --cask codex
 ```
+
+- 本 repo 的 [Windows 安裝器](install-cx.ps1) 維持 npm，加入 `--engine-strict --include=optional`，並驗證 CLI 路徑與版本；完整前置條件與副作用見 [一鍵安裝腳本](../CLI-AGENTS.md#一鍵安裝腳本)。
 
 也可以直接從 [openai/codex releases](https://github.com/openai/codex/releases/latest) 下載對應平台的 binary。
 

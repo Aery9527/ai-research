@@ -35,10 +35,11 @@
 
 ---
 
-- 安裝：`npm install -g @anthropic-ai/claude-code`
-- 更新：`claude update`；若為 npm 全域安裝，也可用 `npm update -g @anthropic-ai/claude-code`，或重新執行 `npm install -g @anthropic-ai/claude-code`
-- 移除：`npm uninstall -g @anthropic-ai/claude-code`
+- 安裝：官方推薦原生安裝；Windows PowerShell 執行 `irm https://claude.ai/install.ps1 | iex`。npm 仍可用：`npm install -g @anthropic-ai/claude-code`。本 repo 的 [Windows 安裝器](install-cc.ps1) 使用原生版，並保留 status line 所需的 Node.js 與 Git Bash。
+- 更新：原生版自動更新，也可執行 `claude update`；npm 全域安裝依官方建議使用 `npm install -g @anthropic-ai/claude-code@latest`。
+- 移除：npm 版使用 `npm uninstall -g @anthropic-ai/claude-code`；原生版依 [官方移除說明](https://code.claude.com/docs/en/setup#uninstall-a-native-installation) 處理。
 - 來源：
+  - [安裝與更新](https://code.claude.com/docs/en/setup)
   - [CLI Reference](https://code.claude.com/docs/en/cli-reference)
   - [Commands](https://code.claude.com/docs/en/commands)
   - [Interactive Mode](https://code.claude.com/docs/en/interactive-mode)
@@ -60,14 +61,11 @@ flowchart LR
 
 ## 更新時間與差異總結
 
-- 更新時間：`2026-05-20`
-- 比較基準：上一版本地文件（補 `LSP 整合` 前；後經雙 agent 驗證修正）
+- 更新時間：`2026-11-05`（Asia/Taipei）。
+- 比較基準：本次修改前的安裝與更新說明；僅核對安裝相關段落，未重新查核其餘 CLI 參考。
 - 差異摘要：
-  - 新增「LSP 整合」章節，整理 Go（gopls）與 HTML（vscode-html-language-server）的安裝方式、PATH 設定，以及 Claude Code plugin 與 MCP 兩種整合路徑。
-  - 補充 Windows PATH PowerShell 設定指令。
-  - 修正 MCP 起始版本（v0.17 → v0.20，最新 v0.22.0）、補充 Claude Code `mcp add` 整合指令與 Attached 模式、為第三方 mcp-gopls wrapper 加上 AI 生成警告。
-  - 修正 Claude Code plugin install 指令 marketplace 名稱（`Piebald-AI` → `claude-code-lsps`）。
-  - 新增「Claude Code 設定」小節：說明需在 `~/.claude/settings.json` 加入 `ENABLE_LSP_TOOL=1` 與 `enabledPlugins`，並須完整重啟 Claude Code。
+    - Windows 預設安裝改為官方推薦的原生版，補上本 repo status line 的 Node.js 與 Git Bash 相依。
+    - 更新原生／npm 的更新及移除方式，npm 更新改用 `npm install -g @anthropic-ai/claude-code@latest`。
 
 [Back to top](#quick-navigation)
 
@@ -188,7 +186,7 @@ flowchart LR
 | `claude -c` | `claude -c` | 繼續目前目錄最近一次對話。 | 快速接回原任務。 |
 | `claude -c -p "query"` | `claude -c -p "Check for type errors"` | 以 print 模式繼續最近一次對話。 | 腳本化接續既有上下文。 |
 | `claude -r "<session>" "query"` | `claude -r "auth-refactor" "Finish this PR"` | 以名稱或 ID 恢復指定 session 並繼續工作。 | 長任務追蹤很好用。 |
-| `claude update` | `claude update` | 更新 CLI 到最新版本。 | 若為 npm 全域安裝，也可用 `npm update -g @anthropic-ai/claude-code`；重新執行 `npm install -g @anthropic-ai/claude-code` 也可達到相同效果。 |
+| `claude update` | `claude update` | 更新 CLI 到最新版本。 | 原生版亦會自動更新；npm 全域安裝可執行 `npm install -g @anthropic-ai/claude-code@latest`。 |
 | `claude install [version]` | `claude install stable` | 安裝或重新安裝 native binary。 | 可指定 `stable`、`latest` 或特定版本號。 |
 | `claude auth login` | `claude auth login --console` | 登入 Anthropic 帳號。 | 支援 `--email`、`--sso`、`--console`。 |
 | `claude auth logout` | `claude auth logout` | 登出並移除本機憑證。 | 切換帳號或清理環境。 |
