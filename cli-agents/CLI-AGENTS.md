@@ -20,7 +20,8 @@
 
 | 文件                                                                                | 說明                                                                                                         |
 |-------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| [common-prompt.md](common-prompt.md) / [common-prompt_ch.md](common-prompt_ch.md) | 可追加到 Claude Code、Codex 等 AI 工具設定檔的共用基本守則，包含語言偏好、工作態度與禁止行為                 |
+| [prompt-user.md](prompt-user.md) / [prompt-user_ch.md](prompt-user_ch.md) | 可追加到 Claude Code、Codex 等 AI 工具設定檔的共用基本守則，包含語言偏好、工作態度與禁止行為                 |
+| [prompt-custom.md](prompt-custom.md) / [prompt-custom_ch.md](prompt-custom_ch.md) | 環境注意事項，可依工作環境調整；區分工作環境案例與專案經驗的紀錄位置 |
 | [hooks-cross-tool.md](hooks-cross-tool.md)                                          | 比較 Claude Code、GitHub Copilot CLI、Codex CLI 的 hook 核心差異，並整理共用 plugin skill + hook 的封裝策略  |
 | [claude-code/cc-cli.md](claude-code/cc-cli.md)                                      | Claude Code：CLI 參數、slash commands、快捷鍵，以及 built-in / custom agent 用法                             |
 | [github-copilot/gc-cli.md](github-copilot/gc-cli.md)                                | GitHub Copilot CLI：CLI 參數、slash commands、custom instructions，以及 built-in / custom agent 用法         |
@@ -65,9 +66,9 @@ flowchart LR
 | [claude-code/install-statusline.sh](claude-code/install-statusline.sh) | `~/.claude/`                                                                             | `install-statusline.ps1` 的 macOS/Linux 版本，邏輯相同；用 `jq` 安全改寫 `settings.json`（需先自行安裝，例如 `brew install jq`），未安裝時會直接報錯並提示                                                                                                                                                                                                                          | `bash ./cli-agents/claude-code/install-statusline.sh`                                    |
 | [codex/install-cx.ps1](codex/install-cx.ps1) | Node.js/npm（缺少時）+ npm 全域套件 + `~/.codex/pets/` | 三步驟：1) 先檢查 pets 來源，再確認 Node.js/npm 可執行；2) `npm install -g --engine-strict --include=optional @openai/codex`，安裝失敗即停止；驗證 npm prefix 中的 `codex.cmd --version`，必要時將 prefix 加入使用者 PATH，並確認 `codex` 指令來源；3) 遞迴複製 [pets/](codex/pets/)，覆蓋同名檔案，不刪除目的地多出的檔案。 | `powershell -ExecutionPolicy Bypass -File .\cli-agents\codex\install-cx.ps1` |
 | [codex/install-cx.sh](codex/install-cx.sh)                            | 系統層級（Node.js/npm）+ `~/.codex/pets/`                                                 | macOS 版對應腳本，同樣三步驟，改用 Homebrew 處理 npm（邏輯與 `install-cc.sh` 相同），第三步用 `cp -Rf` 把 [pets/](codex/pets/) 複製到 `~/.codex/pets/`                                                                                                                                                                                                                              | `bash ./cli-agents/codex/install-cx.sh`                                                  |
-| [install-sys-prompt.ps1](install-sys-prompt.ps1)                      | `$env:USERPROFILE\.claude\`、`$env:USERPROFILE\.codex\`、`$env:USERPROFILE\.copilot\`     | 若目標檔已存在，先改名備份為 `<檔名>_yyMMddHHmmss`，再複製三個工具的提示範本；然後將 [common-prompt.md](common-prompt.md) append 到 `CLAUDE.md`、`AGENTS.md` 與 `copilot-instructions.md` 底部                                                                                                                                                                                       | `powershell -ExecutionPolicy Bypass -File .\cli-agents\install-sys-prompt.ps1`           |
-| [install-sys-prompt.sh](install-sys-prompt.sh)                        | `$HOME/.claude/`、`$HOME/.codex/`、`$HOME/.copilot/`                                      | 與 PowerShell 版本相同，適用於 POSIX shell、macOS、Linux 與 Git Bash；先部署範本，再將 [common-prompt.md](common-prompt.md) append 到 `CLAUDE.md`、`AGENTS.md` 與 `copilot-instructions.md` 底部                                                                                                                                                                                      | `bash ./cli-agents/install-sys-prompt.sh`                                                |
-| [tool/PowerShell/install.ps1](../tool/PowerShell/install.ps1)         | Documents 下的 `PowerShell\`（profile）+ `$HOME\.config\powershell\`（其餘腳本）          | 複製 [Microsoft.PowerShell_profile.ps1](../tool/PowerShell/Microsoft.PowerShell_profile.ps1) 到 pwsh profile 資料夾；其餘 `tool/PowerShell/` 下的腳本（`local_profile.ps1`、`Exe-*.ps1`、`Set-*.ps1` 等）複製到 `.config\powershell\`；詳見 [tool/TOOL.md](../tool/TOOL.md)                                                                                                      | `powershell -ExecutionPolicy Bypass -File .\tool\PowerShell\install.ps1`                 |
+| [install-sys-prompt.ps1](install-sys-prompt.ps1)                      | `$env:USERPROFILE\.claude\`、`$env:USERPROFILE\.codex\`、`$env:USERPROFILE\.copilot\`     | 若目標檔已存在，先改名備份為 `<檔名>_yyMMddHHmmss`，再複製三個工具的提示範本；然後依序將 [prompt-user.md](prompt-user.md) 與 [prompt-custom.md](prompt-custom.md) append 到 `CLAUDE.md`、`AGENTS.md` 與 `copilot-instructions.md` 底部                                                                                                                                                                                       | `powershell -ExecutionPolicy Bypass -File .\cli-agents\install-sys-prompt.ps1`           |
+| [install-sys-prompt.sh](install-sys-prompt.sh)                        | `$HOME/.claude/`、`$HOME/.codex/`、`$HOME/.copilot/`                                      | 與 PowerShell 版本相同，適用於 macOS、Linux 的 Bash 與 Windows 的 Git Bash；先部署範本，再依序將 [prompt-user.md](prompt-user.md) 與 [prompt-custom.md](prompt-custom.md) append 到 `CLAUDE.md`、`AGENTS.md` 與 `copilot-instructions.md` 底部                                                                                                                                                                                      | `bash ./cli-agents/install-sys-prompt.sh`                                                |
+| [tool/PowerShell/install.ps1](../tool/PowerShell/install.ps1)         | Documents 下的 `PowerShell\`（profile）+ `$HOME\.config\powershell\`（其餘腳本）          | 複製 [Microsoft.PowerShell_profile.ps1](../tool/PowerShell/Microsoft.PowerShell_profile.ps1) 到 pwsh profile 資料夾；其餘 `tool/PowerShell/` 下的腳本（`local_profile.ps1`、`Exe-*.ps1`、`Set-*.ps1` 等）複製到 `.config\powershell\`；[Set-DevEnv.ps1](../tool/PowerShell/Set-DevEnv.ps1) 載入時會為未設定或空白的 `AGENT_ENV_NOTES_FILE` 提供路徑設定提醒；詳見 [tool/TOOL.md](../tool/TOOL.md)                                                                                                      | `powershell -ExecutionPolicy Bypass -File .\tool\PowerShell\install.ps1`                 |
 
 - Windows 安裝器共用 [install-cli-common.ps1](install-cli-common.ps1) 的 PATH、Node.js 與原生程式驗證；它是函式庫，不能單獨安裝 CLI。請保留 `cli-agents/` 的相對目錄結構。
 - 兩支 Windows 安裝器會在持久 PATH 缺少 CLI 安裝目錄時補入使用者 PATH。程序 PATH 會先合併目前程序、Machine 與 User 的值並去重，保留 nvm 等程序專用路徑及優先順序；若其他安裝、alias 或 function 遮蔽新 CLI，腳本會停止並列出需處理的衝突。
@@ -81,15 +82,19 @@ flowchart LR
 ### 共用 Prompt 安裝器行為
 
 - 以下行為同時適用於 [install-sys-prompt.ps1](install-sys-prompt.ps1) 與 [install-sys-prompt.sh](install-sys-prompt.sh)。
+- 每個目標檔依序合併三組英文來源：工具專用範本 → [prompt-user.md](prompt-user.md) → [prompt-custom.md](prompt-custom.md)；各組之間會補換行。繁體中文對照檔不參與安裝。
+- 依工作環境修改 [prompt-custom.md](prompt-custom.md)，並同步 [prompt-custom_ch.md](prompt-custom_ch.md) 後，重跑安裝器即可將規則部署到三個工具的使用者設定檔；空白的自訂檔也可安裝，但檔案必須存在。
+- `AGENT_ENV_NOTES_FILE` 用於指定工作環境經驗紀錄檔的完整路徑；由 agent 在使用者決定記錄工作環境案例時讀取。[Set-DevEnv.ps1](../tool/PowerShell/Set-DevEnv.ps1) 在變數未設定或空白時提供請 AI 先詢問並設定路徑的提醒文字；提醒不是路徑，agent 必須先協助設定。共用 Prompt 安裝器只合併規則文字，不讀取或展開此變數，也不設定變數或建立紀錄檔。
+- 設定變數後，必須讓執行 agent 的程序取得更新後的環境。Windows 可設定使用者環境變數後重新啟動工具；Bash 可在啟動工具的 shell 中以 `export` 設定。指定的紀錄檔必須可讀；變數未設定、值為設定提醒或檔案無法讀取時，agent 必須先詢問處理方式。
 - 可重複執行；每次會先將既有目標檔改名備份為 `<檔名>_yyMMddHHmmss`，同一次執行的三個檔案共用同一個時間戳記。
 - 備份不會自動清除，長期重複執行會在同目錄下累積多個備份檔，需要時自行手動清理。
-- 若來源檔案不存在或複製失敗，腳本會停止並回傳錯誤，且在檢查完成前不建立、不改名、不覆寫任何目標檔。
+- 所有來源檔案通過存在性檢查前，不建立、不改名、不覆寫任何目標檔；缺檔時回傳錯誤。複製或追加失敗時也會停止並回傳錯誤，但不回復已完成的部署步驟。
 
 | 前置狀態                                                                    | 執行       | 預期結果                                                                                                                                                                   |
 |-----------------------------------------------------------------------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 三個目標目錄不存在，來源範本與 [common-prompt.md](common-prompt.md) 都存在   | 執行安裝器 | 建立 `.claude`、`.codex`、`.copilot`；`CLAUDE.md`、`AGENTS.md`、`copilot-instructions.md` 都由各自範本加上 [common-prompt.md](common-prompt.md) 組成；不產生任何備份檔   |
-| `CLAUDE.md` 已存在且內容為自訂文字                                          | 再次執行   | 先把現有 `CLAUDE.md` 改名為 `CLAUDE.md_yyMMddHHmmss`（原自訂文字完整保留在備份檔中），再以 Claude 範本重新產生 `CLAUDE.md` 並將 [common-prompt.md](common-prompt.md) append 到底部 |
-| 任一來源範本或 [common-prompt.md](common-prompt.md) 不存在                  | 執行安裝器 | 顯示來源檔案錯誤、回傳非零狀態，且在檢查完成前不建立、不改名、不覆寫任何目標檔                                                                                             |
+| 三個目標目錄不存在，來源範本、[prompt-user.md](prompt-user.md) 與 [prompt-custom.md](prompt-custom.md) 都存在   | 執行安裝器 | 建立 `.claude`、`.codex`、`.copilot`；`CLAUDE.md`、`AGENTS.md`、`copilot-instructions.md` 都依序由各自範本、[prompt-user.md](prompt-user.md)、[prompt-custom.md](prompt-custom.md) 組成；不產生任何備份檔   |
+| `CLAUDE.md` 已存在且內容為自訂文字                                          | 再次執行   | 先把現有 `CLAUDE.md` 改名為 `CLAUDE.md_yyMMddHHmmss`（原自訂文字完整保留在備份檔中），再以 Claude 範本重新產生 `CLAUDE.md` 並依序將 [prompt-user.md](prompt-user.md) 與 [prompt-custom.md](prompt-custom.md) append 到底部 |
+| 任一來源範本、[prompt-user.md](prompt-user.md) 或 [prompt-custom.md](prompt-custom.md) 不存在                  | 執行安裝器 | 顯示來源檔案錯誤、回傳非零狀態，且在檢查完成前不建立、不改名、不覆寫任何目標檔                                                                                             |
 
 - PowerShell 範例：
 
@@ -97,7 +102,9 @@ flowchart LR
 powershell -ExecutionPolicy Bypass -File .\cli-agents\install-sys-prompt.ps1
 ```
 
-- 首次執行（目標檔皆不存在）的成功輸出會列出三個 `Template` 與三個 `Common prompt` `[OK]` 項目，最後顯示 `Done.`；重複執行時，每個目標檔前面會多一行 `[Backup] <原檔> -> <原檔>_yyMMddHHmmss`。shell 版本的成功輸出語意相同。
+- 隔離測試：[tests/test_install_sys_prompt.py](tests/test_install_sys_prompt.py)，以 `python -X utf8 cli-agents/tests/test_install_sys_prompt.py` 執行；使用 Python 標準函式庫，會測試找到的 PowerShell 與 Bash，Windows 優先選用 Git Bash。所有安裝均在暫存來源與家目錄內執行。
+
+- 首次執行（目標檔皆不存在）的成功輸出會列出三個 `Template`、三個 `prompt-user.md` 與三個 `prompt-custom.md` `[OK]` 項目，最後顯示 `Done.`；重複執行時，每個目標檔前面會多一行 `[Backup] <原檔> -> <原檔>_yyMMddHHmmss`。shell 版本的成功輸出語意相同。
 
 [Back to top](#table-of-contents)
 

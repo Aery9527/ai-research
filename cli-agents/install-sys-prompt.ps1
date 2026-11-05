@@ -7,32 +7,37 @@ $ErrorActionPreference = 'Stop'
 
 $sourceRoot = $PSScriptRoot
 $homeRoot = $env:USERPROFILE
-$commonPromptSource = Join-Path $sourceRoot 'common-prompt.md'
+$promptSources = @(
+    (Join-Path $sourceRoot 'prompt-user.md')
+    (Join-Path $sourceRoot 'prompt-custom.md')
+)
 $installItems = @(
     [PSCustomObject]@{
-        Template           = Join-Path $sourceRoot 'claude-code\.claude\CLAUDE.md'
-        Target             = Join-Path $homeRoot '.claude\CLAUDE.md'
-        AppendCommonPrompt = $true
+        Template = Join-Path $sourceRoot 'claude-code\.claude\CLAUDE.md'
+        Target   = Join-Path $homeRoot '.claude\CLAUDE.md'
     }
     [PSCustomObject]@{
-        Template           = Join-Path $sourceRoot 'codex\.codex\AGENTS.md'
-        Target             = Join-Path $homeRoot '.codex\AGENTS.md'
-        AppendCommonPrompt = $true
+        Template = Join-Path $sourceRoot 'codex\.codex\AGENTS.md'
+        Target   = Join-Path $homeRoot '.codex\AGENTS.md'
     }
     [PSCustomObject]@{
-        Template           = Join-Path $sourceRoot 'github-copilot\.copilot\copilot-instructions.md'
-        Target             = Join-Path $homeRoot '.copilot\copilot-instructions.md'
-        AppendCommonPrompt = $true
+        Template = Join-Path $sourceRoot 'github-copilot\.copilot\copilot-instructions.md'
+        Target   = Join-Path $homeRoot '.copilot\copilot-instructions.md'
     }
 )
 
-foreach ($path in @($commonPromptSource) + @($installItems | ForEach-Object { $_.Template })) {
+foreach ($path in $promptSources + @($installItems | ForEach-Object { $_.Template })) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
         throw "Source file not found: $path"
     }
 }
 
-$commonPrompt = Get-Content -LiteralPath $commonPromptSource -Raw -Encoding UTF8
+$prompts = @($promptSources | ForEach-Object {
+    [PSCustomObject]@{
+        Name    = Split-Path -Leaf $_
+        Content = Get-Content -LiteralPath $_ -Raw -Encoding UTF8
+    }
+})
 $backupSuffix = Get-Date -Format 'yyMMddHHmmss'
 
 Write-Host '=== Install common prompts ===' -ForegroundColor Cyan
@@ -50,9 +55,9 @@ foreach ($item in $installItems) {
 }
 
 foreach ($item in $installItems) {
-    if ($item.AppendCommonPrompt) {
-        Add-Content -LiteralPath $item.Target -Value ("`r`n" + $commonPrompt) -Encoding UTF8
-        Write-Host "  [OK] Common prompt: $($item.Target)" -ForegroundColor Green
+    foreach ($prompt in $prompts) {
+        Add-Content -LiteralPath $item.Target -Value ("`r`n`r`n" + $prompt.Content) -Encoding UTF8 -NoNewline
+        Write-Host "  [OK] $($prompt.Name): $($item.Target)" -ForegroundColor Green
     }
 }
 

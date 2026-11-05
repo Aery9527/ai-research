@@ -18,6 +18,7 @@ git submodule update --init --recursive
 ```
 
 - 要一次安裝 Claude Code CLI、Codex CLI、共用系統提示詞等本機工具，執行 [scripts/install-all.ps1 / .sh](scripts/SCRIPTS.md#install-all)；各安裝腳本的前置條件、行為與風險看 [一鍵安裝腳本](cli-agents/CLI-AGENTS.md#一鍵安裝腳本)。
+- 要調整工作環境專用規則，修改 [prompt-custom.md](cli-agents/prompt-custom.md) 並同步 [繁體中文版](cli-agents/prompt-custom_ch.md)，再執行 [共用 Prompt 安裝器](cli-agents/CLI-AGENTS.md#共用-prompt-安裝器行為)，即可合併工具範本、使用者規則與自訂規則並部署到三個工具。
 - 要讓 Claude Code 讀取專案 skills，使用 [Link Agent Skills](scripts/SCRIPTS.md#link-agent-skills) 建立本機連結；Windows 執行 [link-agent-skills.ps1](scripts/link-agent-skills.ps1)，macOS / Linux 執行 [link-agent-skills.sh](scripts/link-agent-skills.sh)，選擇 `1`。
 
 [Back to top](#table-of-contents)

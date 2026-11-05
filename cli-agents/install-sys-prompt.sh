@@ -8,12 +8,12 @@ if [[ -z "${HOME:-}" ]]; then
     exit 1
 fi
 
-common_prompt_source="$SCRIPT_DIR/common-prompt.md"
+prompt_sources=("$SCRIPT_DIR/prompt-user.md" "$SCRIPT_DIR/prompt-custom.md")
 template_claude="$SCRIPT_DIR/claude-code/.claude/CLAUDE.md"
 template_codex="$SCRIPT_DIR/codex/.codex/AGENTS.md"
 template_copilot="$SCRIPT_DIR/github-copilot/.copilot/copilot-instructions.md"
 
-for source in "$common_prompt_source" "$template_claude" "$template_codex" "$template_copilot"; do
+for source in "${prompt_sources[@]}" "$template_claude" "$template_codex" "$template_copilot"; do
     if [[ ! -f "$source" ]]; then
         printf 'ERROR: Source file not found: %s\n' "$source" >&2
         exit 1
@@ -49,14 +49,12 @@ backup_if_exists "$target_copilot"
 cp -f "$template_copilot" "$target_copilot"
 printf '  [OK] Template: %s\n' "$target_copilot"
 
-printf '\n' >> "$target_claude"
-cat "$common_prompt_source" >> "$target_claude"
-printf '  [OK] Common prompt: %s\n' "$target_claude"
-printf '\n' >> "$target_codex"
-cat "$common_prompt_source" >> "$target_codex"
-printf '  [OK] Common prompt: %s\n' "$target_codex"
-printf '\n' >> "$target_copilot"
-cat "$common_prompt_source" >> "$target_copilot"
-printf '  [OK] Common prompt: %s\n' "$target_copilot"
+for target in "$target_claude" "$target_codex" "$target_copilot"; do
+    for source in "${prompt_sources[@]}"; do
+        printf '\n\n' >> "$target"
+        cat "$source" >> "$target"
+        printf '  [OK] %s: %s\n' "${source##*/}" "$target"
+    done
+done
 
 printf '%s\n' 'Done.'

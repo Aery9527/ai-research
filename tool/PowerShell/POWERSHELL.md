@@ -107,7 +107,7 @@ flowchart TD
 
 | 環境設定腳本 | 設定內容 |
 |---|---|
-| [Set-DevEnv.ps1](Set-DevEnv.ps1) | 共用開發環境變數；目前設定 `AERY_TEST`。 |
+| [Set-DevEnv.ps1](Set-DevEnv.ps1) | 設定 `AERY_TEST`；`AGENT_ENV_NOTES_FILE` 未設定或空白時，填入請 AI 先詢問並設定紀錄檔完整路徑的提醒文字，既有非空白值則保留。 |
 | [Set-GoEnv.ps1](Set-GoEnv.ps1) | `GO_BIN_HOME` 指向 `$HOME/go/bin`，必要時加到 `PATH` 前端。 |
 | [Set-GoVersion.ps1](Set-GoVersion.ps1) | `GO_HOME` 指向指定 Go 版本的 `bin`，必要時加到 `PATH` 前端。 |
 | [Set-JavaEnv.ps1](Set-JavaEnv.ps1) | `MAVEN_HOME` 指向指定 Maven 安裝目錄，必要時將其 `bin` 加到 `PATH` 前端。 |
@@ -115,6 +115,7 @@ flowchart TD
 
 - 例如 `jcx --resume`：依序 dot-source [Set-DevEnv.ps1](Set-DevEnv.ps1) → [Set-JavaEnv.ps1](Set-JavaEnv.ps1) → [Set-JavaVersion.ps1](Set-JavaVersion.ps1) → [Exe-CX.ps1](Exe-CX.ps1)，最後執行 `codex --sandbox danger-full-access -a never --resume`。
 - 環境腳本都透過 dot-source 載入；設定的環境變數會留在目前 PowerShell 工作階段，CLI 結束後不會自動還原。
+- `AGENT_ENV_NOTES_FILE` 的預設提醒不是檔案路徑；[自訂提示詞](../../cli-agents/prompt-custom_ch.md) 要求 AI 在需要記錄工作環境案例時，先詢問使用者並協助設定路徑。若要跨工作階段使用，必須將確認後的路徑存入使用者環境變數，或修改已部署的 [Set-DevEnv.ps1](Set-DevEnv.ps1) 預設值；只設定目前程序不會永久保存。
 - AI CLI 捷徑不切換工作目錄；CLI 使用呼叫當下的目錄。
 
 [回到目錄](#table-of-contents)
