@@ -22,29 +22,17 @@
 
 ## Branch 原則
 
-- 修改檔案前，必須確認目前 branch。除 [prompt-custom.md](cli-agents/prompt-custom.md) 與 [prompt-custom_ch.md](cli-agents/prompt-custom_ch.md) 的環境專屬紀錄外，其他變更一律必須在 `main` 上進行。
-- 將環境專屬案例記錄到 [prompt-custom.md](cli-agents/prompt-custom.md) 與 [prompt-custom_ch.md](cli-agents/prompt-custom_ch.md) 前，必須確認目前 branch 符合 `env/*`；嚴禁在 `main` 或其他 branch 記錄此類案例。
-- 修改環境紀錄前，必須 fetch 最新的遠端 `main`，再 merge 到目前的 `env/*` branch。同步只允許單向進行：嚴禁將環境專屬變更帶回 `main`，包含 merge、squash、cherry-pick 或複製內容。
-- 在 `env/*` 上，一般環境紀錄必須兩檔同時變更，且變更僅限於 [prompt-custom.md](cli-agents/prompt-custom.md) 與 [prompt-custom_ch.md](cli-agents/prompt-custom_ch.md) 時，才允許 commit 與 push。唯一例外是帶入已存在於 fetch 後遠端 `main` 的 commits，以及僅用於整合這些更新的 merge commits；嚴禁在同步 commit 混入無關修改。commit 前必須檢查已暫存、未暫存變更與未追蹤檔案，push 前必須檢查待推送的 commits；嚴禁僅為通過檢查而略過其他已變更檔案。
-- branch 檢查不符、無關的未提交變更阻擋操作、同步衝突，或同步、commit、push、安裝失敗時，必須停下詢問使用者如何處理；嚴禁自動 stash、丟棄變更、解決衝突或 force-push。
-- 啟用本機 [branch hooks](scripts/SCRIPTS.md#git-branch-hooks) 後，非 fast-forward 同步必須使用 `git merge --no-commit origin/main`，再執行 `git commit`；自動 merge hook 會拒絕尚無法驗證來源的提交。使用者決定處理方式後，可以解決 [prompt-custom.md](cli-agents/prompt-custom.md) 與 [prompt-custom_ch.md](cli-agents/prompt-custom_ch.md) 內的衝突；同步 commit 的非紀錄檔案必須與其 main 父本一致。submodule checkout 漂移、已修改內容與未追蹤內容都必須先檢查，由使用者明確處理後才能提交；嚴禁由 hooks 自動清理。
-- 本機 hooks 用於防誤操作，並非伺服器端強制執行：可以停用或略過，也不涵蓋 GitHub 網頁、PR 或 API 更新。main 歷史檢查依賴已知環境 refs，無法可靠辨識任意複製、squash 或 cherry-pick 的來源；詳見 [branch guard 限制](scripts/sd-git-branch-guard.md#限制)。
-
-### 一般修改與分支返回流程
-
-- 此流程適用於一般 repo 修改，不適用於環境紀錄。分支切換必須由 agent 執行；hooks 只驗證操作，不會切換 branch。
-
-1. 開始前，必須在任務脈絡記住起始 branch。起始為 `env/*` 時，必須以它作為返回分支；否則，若尚未知道或指定返回的環境分支，必須詢問使用者是否返回環境分支及其名稱，嚴禁猜測或把本次分支狀態寫入 agent 規則檔。
-2. 每次切換 branch 前，必須確認工作區與 index 乾淨，包含未追蹤檔案。修改前，若尚未位於 `main`，必須先切至 `main`，再 fetch `origin/main`、僅以 fast-forward 更新 main，並確認 `main` 與 `origin/main` 相同。更新 `main` 後、修改前，必須以 `git status --porcelain=v1 --untracked-files=all --ignore-submodules=none` 再次確認乾淨狀態，包含 submodule checkout 漂移；不乾淨時必須停下詢問，嚴禁自動執行 `git submodule update`。預定的乾淨切換不必再次確認；branch 非預期、切換受阻、本機提交領先 `origin/main` 或歷史分歧時，必須停下詢問使用者。
-3. 必須在 `main` 完成修改、審查、commit 與 push；push 前必須檢查 `origin/main..main`，確認只包含本次任務已審查的提交。此流程嚴禁從 `main` 部署 user prompt。使用者選擇不返回環境分支時，必須在 `main` 結束，略過第 4–5 步，並告知未執行 prompt 部署。
-4. 工作區乾淨時，必須切回記住的環境分支，fetch 最新遠端 `main`，再依既有 hooks 規範 merge `origin/main`。需要 merge commit 時，必須驗證並提交同步結果；fast-forward 或 already-up-to-date 不得建立空提交。衝突或其他失敗必須停下詢問，嚴禁自動 stash、丟棄變更、解決衝突或 force-push。
-5. 必須 push 更新後的環境分支，再從該分支執行 repo 的 [Windows prompt 安裝器](cli-agents/install-sys-prompt.ps1)或 [macOS/Linux prompt 安裝器](cli-agents/install-sys-prompt.sh)，重新安裝英文 prompt。除非使用者明確指定其他結束分支，任務必須在記住的環境分支結束。
+- 此公開 repo 的所有修改必須在 `main` 進行。修改前必須檢查 branch、fetch `origin/main`、以 fast-forward 更新本機 `main`，並確認沒有非預期提交或未提交內容，包含 submodule 漂移。預定的乾淨切換至 `main` 不必再次確認。
+- 機器專屬環境紀錄必須放在設定的 private 紀錄 repo，嚴禁放入此 repo 或其 submodule。必須遵守該 repo 的 agent 規則與已載入的環境紀錄指示；嚴禁將環境歷史或機器路徑複製回公開 `main`。
+- 一般 repo 修改必須在 `main` 完成審查、commit 與 push；push 前必須檢查全部待推送提交。必須在 `main` 結束，嚴禁返回舊公開 `env/*` 或自動重新部署其 custom prompt。
+- Private prompt 部署必須使用設定紀錄檔旁的 wrapper。通用 [Windows 安裝器](cli-agents/install-sys-prompt.ps1)與 [macOS/Linux 安裝器](cli-agents/install-sys-prompt.sh)接受明確的外部 custom 路徑；未指定時會部署此 repo 同目錄的 custom。通用安裝器與 install-all 不會自動尋找或保留 private 來源。
+- branch 不符、非預期未提交內容、衝突，或同步、審查、commit、push、部署失敗時，必須停下詢問使用者；嚴禁自動 stash、丟棄變更、解決衝突或 force-push。
+- 現有[本機 hooks](scripts/SCRIPTS.md#git-branch-hooks)也支援舊環境歷史，但不代表允許在此新增環境紀錄。hooks 可以略過，不涵蓋伺服器端更新，也無法證明任意複製或 squash/cherry-pick 的來源。
 
 ## 文件結構
 
 - 所有 agent 共用的規則放在 [LORE_ch.md](LORE_ch.md)；host 入口檔只放轉介或僅適用該 host 的規則。
 - `LORE`、`AGENTS`、`CLAUDE`、`CODEX` 必須各有無後綴的英文檔與加 `_ch` 後綴的等價繁體中文檔；兩者必須在同一次變更中更新。其他 agent 文件可以加 `_ch` 對應檔，加了之後兩者必須維持等價。`_ch` 檔在對應目標存在時連到 `_ch` 目標。
-- `env/*` 的環境專屬案例與紀錄檔路徑必須維持中英文等價，各語言 prompt 指向自己的語言檔。Hooks 檢查成對變更與一般檔案存在性，嚴禁視為翻譯等價的證明。同步 merge 可以只改任一紀錄檔或不改紀錄檔；舊的單檔環境歷史須先由使用者決定遷移方式，才能通過成對檢查。
 - agent 文件只放穩定規則；嚴禁寫入任務進度、暫時狀態或進行中的遷移。
 - [README.md](README.md) 是繁體中文的人類讀者文件。
 - 專案 skill 放在 `.agents/skills/<skill-name>/`；嚴禁直接在 `.claude/skills` 建立 skill 檔案，它是指向 `.agents/skills` 的本機 link。

@@ -59,24 +59,24 @@ class PromptInstallTests(unittest.TestCase):
             shutil.copyfile(INSTALLER_ROOT / f"install-sys-prompt{suffix}", source / f"install-sys-prompt{suffix}")
         return source, home
 
-    def install(self, runtime, paths):
+    def install(self, runtime, paths, arguments=()):
         """只在子程序指定測試家目錄，不修改實際使用者設定。"""
         _, command, suffix = runtime
         source, home = paths
         env = dict(os.environ, HOME=home.as_posix(), USERPROFILE=str(home))
         return subprocess.run(
-            [*command, (source / f"install-sys-prompt{suffix}").as_posix()],
-            env=env, capture_output=True, encoding="utf-8", errors="replace", timeout=30,
+            [*command, (source / f"install-sys-prompt{suffix}").as_posix(), *arguments],
+            env=env, cwd=self.root, capture_output=True, encoding="utf-8", errors="replace", timeout=30,
         )
 
-    def assert_merged(self, paths):
+    def assert_merged(self, paths, custom=None):
         """逐一比對三個目標的完整內容，忽略平台換行與 UTF-8 BOM。"""
         source, home = paths
         for template, target in TEMPLATES.items():
             actual = (home / target).read_text(encoding="utf-8-sig")
             expected = [
-                (source / relative).read_text(encoding="utf-8-sig").strip()
-                for relative in (template, "prompt-user.md", "prompt-custom.md")
+                path.read_text(encoding="utf-8-sig").strip()
+                for path in (source / template, source / "prompt-user.md", custom or source / "prompt-custom.md")
             ]
             self.assertEqual(actual.strip(), "\n\n".join(expected).strip())
 
@@ -135,6 +135,74 @@ class PromptInstallTests(unittest.TestCase):
                 result = self.install(runtime, paths)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assert_merged(paths)
+
+    def test_external_custom_path_is_anchored_to_script(self):
+        """外部相對與絕對來源取代內建 custom，與工作目錄無關。"""
+        for runtime in self.runtimes:
+            for absolute in (False, True):
+                with self.subTest(runtime=runtime[0], absolute=absolute):
+                    paths = self.fixture(f"external-{runtime[0]}-{absolute}")
+                    external = paths[0].parent / "私有 custom.md"
+                    external.write_text("# 私有環境\nOnly private custom", encoding="utf-8")
+                    argument = external.as_posix() if absolute else "../私有 custom.md"
+                    if absolute and runtime[0] == 'bash' and os.name == 'nt':
+                        argument = '/' + argument[0].lower() + argument[2:]
+                    flag = '--custom-prompt' if runtime[0] == 'bash' else '-CustomPromptPath'
+                    (paths[0] / 'prompt-custom.md').unlink()
+                    result = self.install(runtime, paths, (flag, argument))
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    self.assert_merged(paths, external)
+
+    def test_invalid_explicit_custom_never_falls_back_or_writes(self):
+        """缺檔、目錄與明確空值均失敗，既有設定不變。"""
+        for runtime in self.runtimes:
+            cases = ['missing.md', '.', '']
+            if runtime[0] != 'bash':
+                cases += ['C:custom.md', '/custom.md', '\\custom.md']
+            for index, argument in enumerate(cases):
+                with self.subTest(runtime=runtime[0], argument=argument):
+                    paths = self.fixture(f"invalid-{runtime[0]}-{index}")
+                    target = paths[1] / '.claude/CLAUDE.md'
+                    target.parent.mkdir(parents=True)
+                    target.write_bytes(b'original')
+                    flag = '--custom-prompt' if runtime[0] == 'bash' else '-CustomPromptPath'
+                    result = self.install(runtime, paths, (flag, argument))
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertEqual(target.read_bytes(), b'original')
+                    self.assertEqual(list(target.parent.iterdir()), [target])
+                    self.assertFalse((paths[1] / '.codex').exists())
+                    self.assertFalse((paths[1] / '.copilot').exists())
+
+    def test_bash_invalid_arguments_stop_before_writes(self):
+        """Bash 缺值、未知與多餘參數在寫入前拒絕。"""
+        for runtime in self.runtimes:
+            if runtime[0] != 'bash':
+                continue
+            for index, args in enumerate([('--custom-prompt',), ('--unknown',), ('--custom-prompt', 'prompt-custom.md', 'extra')]):
+                paths = self.fixture(f"badargs-{index}")
+                result = self.install(runtime, paths, args)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse(paths[1].exists())
+
+    @unittest.skipIf(os.name == 'nt' or (hasattr(os, 'geteuid') and os.geteuid() == 0), 'POSIX 非 root 才能可靠驗證讀取權限')
+    def test_unreadable_external_custom_stops_before_writes(self):
+        """不可讀外部來源不備份、不覆寫，也不建立其他工具目錄。"""
+        for runtime in self.runtimes:
+            if runtime[0] != 'bash':
+                continue
+            paths = self.fixture('unreadable')
+            external = paths[0].parent / 'private.md'
+            external.write_text('private', encoding='utf-8')
+            external.chmod(0)
+            target = paths[1] / '.claude/CLAUDE.md'
+            target.parent.mkdir(parents=True)
+            target.write_bytes(b'original')
+            result = self.install(runtime, paths, ('--custom-prompt', '../private.md'))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(target.read_bytes(), b'original')
+            self.assertEqual(list(target.parent.iterdir()), [target])
+            self.assertFalse((paths[1] / '.codex').exists())
+            self.assertFalse((paths[1] / '.copilot').exists())
 
 
 if __name__ == "__main__":

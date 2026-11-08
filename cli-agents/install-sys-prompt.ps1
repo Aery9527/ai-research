@@ -1,15 +1,32 @@
 #Requires -Version 5.1
 
 [CmdletBinding()]
-param()
+param(
+    [string]$CustomPromptPath
+)
 
 $ErrorActionPreference = 'Stop'
 
 $sourceRoot = $PSScriptRoot
 $homeRoot = $env:USERPROFILE
+$customSource = Join-Path $sourceRoot 'prompt-custom.md'
+if ($PSBoundParameters.ContainsKey('CustomPromptPath')) {
+    if ([string]::IsNullOrWhiteSpace($CustomPromptPath)) {
+        throw 'CustomPromptPath must name a file.'
+    }
+    $absolute = $CustomPromptPath -match '^(?:[A-Za-z]:[\\/]|[\\/]{2}[^\\/]+[\\/][^\\/]+(?:[\\/]|$))'
+    if (-not $absolute -and ($CustomPromptPath -match '^[A-Za-z]:' -or [IO.Path]::IsPathRooted($CustomPromptPath))) {
+        throw 'Drive-relative and root-relative paths are not supported.'
+    }
+    if ($absolute) {
+        $customSource = [IO.Path]::GetFullPath($CustomPromptPath)
+    } else {
+        $customSource = [IO.Path]::GetFullPath((Join-Path $sourceRoot $CustomPromptPath))
+    }
+}
 $promptSources = @(
     (Join-Path $sourceRoot 'prompt-user.md')
-    (Join-Path $sourceRoot 'prompt-custom.md')
+    $customSource
 )
 $installItems = @(
     [PSCustomObject]@{

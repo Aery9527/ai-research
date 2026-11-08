@@ -2,20 +2,31 @@
 set -euo pipefail
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+custom_source="$SCRIPT_DIR/prompt-custom.md"
+if (( $# )); then
+    if [[ "$1" != '--custom-prompt' || $# != 2 || -z "$2" ]]; then
+        printf '%s\n' 'ERROR: Usage: install-sys-prompt.sh [--custom-prompt FILE]' >&2
+        exit 1
+    fi
+    case "$2" in
+        /*) custom_source="$2" ;;
+        *) custom_source="$SCRIPT_DIR/$2" ;;
+    esac
+fi
 
 if [[ -z "${HOME:-}" ]]; then
     printf '%s\n' 'ERROR: HOME is not set.' >&2
     exit 1
 fi
 
-prompt_sources=("$SCRIPT_DIR/prompt-user.md" "$SCRIPT_DIR/prompt-custom.md")
+prompt_sources=("$SCRIPT_DIR/prompt-user.md" "$custom_source")
 template_claude="$SCRIPT_DIR/claude-code/.claude/CLAUDE.md"
 template_codex="$SCRIPT_DIR/codex/.codex/AGENTS.md"
 template_copilot="$SCRIPT_DIR/github-copilot/.copilot/copilot-instructions.md"
 
 for source in "${prompt_sources[@]}" "$template_claude" "$template_codex" "$template_copilot"; do
-    if [[ ! -f "$source" ]]; then
-        printf 'ERROR: Source file not found: %s\n' "$source" >&2
+    if [[ ! -f "$source" || ! -r "$source" ]]; then
+        printf 'ERROR: Source file not found or unreadable: %s\n' "$source" >&2
         exit 1
     fi
 done
