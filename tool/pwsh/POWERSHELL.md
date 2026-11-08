@@ -17,9 +17,9 @@ flowchart TD
     accTitle: PowerShell 設定部署
     accDescr: 安裝入口依序建立目的地目錄、複製 profile，再複製其餘檔案。
     Entry["直接執行 install.ps1<br/>或 install-all.ps1 選項 3"] -->|呼叫| Install["install.ps1"]
-    Install -->|建立目錄| Directories["Documents 下的 PowerShell<br/>與 $HOME/.config/powershell"]
+    Install -->|建立目錄| Directories["Documents 下的 PowerShell<br/>與 $HOME/.config/pwsh"]
     Directories -->|先複製| ProfileCopy["Microsoft.PowerShell_profile.ps1<br/>→ Documents 下的 PowerShell"]
-    ProfileCopy -->|再複製| OtherCopy["其餘檔案 → $HOME/.config/powershell<br/>排除 profile 與 install.ps1"]
+    ProfileCopy -->|再複製| OtherCopy["其餘檔案 → $HOME/.config/pwsh<br/>排除 profile 與 install.ps1"]
 ```
 
 - 入口：[install.ps1](install.ps1)；整合選單：[install-all.ps1](../../scripts/install-all.ps1)。
@@ -38,13 +38,13 @@ flowchart TD
     accTitle: PowerShell profile 載入流程
     accDescr: 載入 profile 時，只有本機 local_profile 存在才會載入捷徑定義。
     Startup["PowerShell 7 啟動並載入 profile"] -->|執行| Profile["Microsoft.PowerShell_profile.ps1"]
-    Profile -->|Test-Path| Exists{"$HOME/.config/powershell/<br/>local_profile.ps1 是否存在？"}
+    Profile -->|Test-Path| Exists{"$HOME/.config/pwsh/<br/>local_profile.ps1 是否存在？"}
     Exists -->|存在，dot-source| Local["local_profile.ps1<br/>設定 ToolRoot 並定義捷徑函數"]
     Exists -->|不存在| Skip["略過本機捷徑載入"]
 ```
 
 - [Microsoft.PowerShell_profile.ps1](Microsoft.PowerShell_profile.ps1) 以 dot-source（`. 腳本路徑`）載入 [local_profile.ps1](local_profile.ps1)，讓函數可在目前工作階段使用。
-- `ToolRoot` 固定為 `$HOME/.config/powershell`，後續捷徑均從此處載入腳本。
+- `ToolRoot` 固定為 `$HOME/.config/pwsh`，後續捷徑均從此處載入腳本。
 - 載入 profile 只定義捷徑；使用者呼叫 AI CLI 捷徑時，才設定開發環境並啟動 CLI。
 - 使用 `pwsh -NoProfile` 時不會自動執行此流程。
 

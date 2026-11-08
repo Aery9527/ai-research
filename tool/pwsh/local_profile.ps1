@@ -1,7 +1,7 @@
 ﻿
-# All tool/pwsh scripts are deployed together into $HOME\.config\powershell,
+# All tool/pwsh scripts are deployed together into $HOME\.config\pwsh,
 # so sibling scripts are looked up there rather than via $PSScriptRoot.
-$ToolRoot = Join-Path $HOME ".config\powershell"
+$ToolRoot = Join-Path $HOME ".config\pwsh"
 
 # 列出包含隱藏項目的詳細清單，並轉交 PowerShell 查詢參數。
 function ll {

@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $documents = [Environment]::GetFolderPath([Environment+SpecialFolder]::MyDocuments)
 $profileDest = Join-Path $documents "PowerShell"
-$toolDest = Join-Path $HOME ".config\powershell"
+$toolDest = Join-Path $HOME ".config\pwsh"
 
 New-Item -ItemType Directory -Path $profileDest -Force | Out-Null
 New-Item -ItemType Directory -Path $toolDest -Force | Out-Null
