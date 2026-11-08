@@ -32,7 +32,7 @@ flowchart TD
 |------|------|
 | [`pwsh/POWERSHELL.md`](pwsh/POWERSHELL.md) | 安裝部署、profile 載入與捷徑腳本呼叫流程（Mermaid） |
 | [`pwsh/Microsoft.PowerShell_profile.ps1`](pwsh/Microsoft.PowerShell_profile.ps1) | PowerShell profile 入口（隨 OneDrive 同步）；若 `$HOME\.config\powershell\local_profile.ps1` 存在就載入它 |
-| [`pwsh/local_profile.ps1`](pwsh/local_profile.ps1) | 共用指令定義；提供 `ll` 詳細清單（含隱藏項目）、`caws`/`gws`/`jws` 工作目錄切換，以及 `acc`/`acx`、`goc`/`gcx`、`jcc`/`jcx` 等捷徑函數，內部用 `$ToolRoot`（= `$HOME\.config\powershell`）定位同目錄的 `Exe-*.ps1` / `Set-*.ps1` |
+| [`pwsh/local_profile.ps1`](pwsh/local_profile.ps1) | 共用指令定義；提供 `ll` 詳細清單（含隱藏項目）、`aws`/`gws`/`jws` 工作目錄切換，以及 `acc`/`acx`、`gcc`/`gcx`、`jcc`/`jcx` 等捷徑函數，內部用 `$ToolRoot`（= `$HOME\.config\powershell`）定位同目錄的 `Exe-*.ps1` / `Set-*.ps1` |
 | [`pwsh/Exe-CC.ps1`](pwsh/Exe-CC.ps1) | 執行 Claude Code：`claude --permission-mode bypassPermissions @args` |
 | [`pwsh/Exe-CX.ps1`](pwsh/Exe-CX.ps1) | 執行 Codex CLI：`codex --sandbox danger-full-access -a never @args` |
 | [`pwsh/Set-DevEnv.ps1`](pwsh/Set-DevEnv.ps1) | 開發時共用環境變數設定入口；供 AI CLI / Go / Java wrapper 載入 |

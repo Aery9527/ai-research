@@ -82,7 +82,7 @@ flowchart TD
         AgentEntry["acc / acx"] -->|先載入| AgentDev["Set-DevEnv.ps1"]
     end
     subgraph Go["Go 環境"]
-        GoEntry["goc / gcx"] -->|先載入| GoDev["Set-DevEnv.ps1"]
+        GoEntry["gcc / gcx"] -->|先載入| GoDev["Set-DevEnv.ps1"]
         GoDev -->|再載入| GoEnv["Set-GoEnv.ps1"]
         GoEnv -->|再載入| GoVersion["Set-GoVersion.ps1"]
     end
@@ -101,7 +101,7 @@ flowchart TD
 
 | CLI | 一般環境 | Go 環境 | Java 環境 | 最後執行的腳本與命令 |
 |---|---|---|---|---|
-| Claude Code | `acc` | `goc` | `jcc` | [Exe-CC.ps1](Exe-CC.ps1)：`claude --permission-mode bypassPermissions @args` |
+| Claude Code | `acc` | `gcc` | `jcc` | [Exe-CC.ps1](Exe-CC.ps1)：`claude --permission-mode bypassPermissions @args` |
 | Codex | `acx` | `gcx` | `jcx` | [Exe-CX.ps1](Exe-CX.ps1)：`codex --sandbox danger-full-access -a never @args` |
 
 | 環境設定腳本 | 設定內容 |
@@ -127,7 +127,7 @@ flowchart TD
 
 | 函數 | 切換目的地 |
 |---|---|
-| `caws` | `$HOME/AeryProjects` |
+| `aws` | `$HOME/AeryProjects` |
 | `gws` | `$HOME/GolangProjects` |
 | `jws` | `$HOME/JavaProjects` |
 

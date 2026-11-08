@@ -10,7 +10,8 @@ function ll {
 
 # workspace
 
-function caws { # golang workspace: GolandProjects
+# 此函式會遮蔽同名的 AWS CLI；如需執行外部命令，請指定 aws.exe。
+function aws {
     cd (Join-Path $HOME "AeryProjects")
 }
 
@@ -36,7 +37,8 @@ function acx {
 
 # golang cli
 
-function goc {
+# 此函式會遮蔽同名的 GCC 編譯器；如需執行外部命令，請指定 gcc.exe。
+function gcc {
     . "$ToolRoot\Set-DevEnv.ps1"
     . "$ToolRoot\Set-GoEnv.ps1"
     . "$ToolRoot\Set-GoVersion.ps1"
