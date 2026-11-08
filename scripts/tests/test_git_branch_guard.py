@@ -13,6 +13,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 NOTES = 'cli-agents/prompt-custom_ch.md'
+ENGLISH_NOTES = 'cli-agents/prompt-custom.md'
 HOOKS = ('pre-commit', 'pre-merge-commit', 'pre-push')
 
 
@@ -39,6 +40,7 @@ class BranchGuardTests(unittest.TestCase):
             if relative.startswith('.githooks/'):
                 target.chmod(0o755)
         self.write(NOTES, '共用規則\n')
+        self.write(ENGLISH_NOTES, 'Common rules\n')
         self.write('README.md', '共用內容\n')
         self.git('add', '.')
         self.git('update-index', '--chmod=+x', *[f'.githooks/{name}' for name in HOOKS])
@@ -74,6 +76,10 @@ class BranchGuardTests(unittest.TestCase):
         """新增案例；僅在漏擋測試刻意略過 commit hook。"""
         self.write(path, content)
         self.git('add', path)
+        if path in (NOTES, ENGLISH_NOTES):
+            companion = ENGLISH_NOTES if path == NOTES else NOTES
+            self.write(companion, content)
+            self.git('add', companion)
         return self.git('commit', *(['--no-verify'] if bypass else []), '-m', 'case', ok=False)
 
     def env_branch(self):
@@ -117,6 +123,39 @@ class BranchGuardTests(unittest.TestCase):
         self.write('額外 file.txt', '未追蹤\n')
         self.rejected(self.git('commit', '-m', 'case', ok=False))
 
+    def test_one_sided_records_are_rejected_at_commit_and_push(self):
+        """只改任一語言不能提交；略過後也不能推送。"""
+        self.env_branch()
+        for path in (NOTES, ENGLISH_NOTES):
+            with self.subTest(path=path):
+                self.write(path, 'one sided case\n')
+                self.git('add', path)
+                self.rejected(self.git('commit', '-m', 'one sided', ok=False))
+                self.git('commit', '--no-verify', '-m', 'bypassed one sided')
+                self.rejected(self.git('push', 'origin', 'env/test', ok=False))
+                self.git('reset', '--hard', 'origin/main')
+
+    def test_pair_cannot_be_deleted(self):
+        """成對變更不得以刪除兩個來源檔案通過檢查。"""
+        self.env_branch()
+        self.git('rm', NOTES, ENGLISH_NOTES)
+        self.rejected(self.git('commit', '-m', 'deleted sources', ok=False))
+        self.git('commit', '--no-verify', '-m', 'bypassed deletion')
+        self.rejected(self.git('push', 'origin', 'env/test', ok=False))
+
+    def test_pair_cannot_replace_a_record_with_a_symlink(self):
+        """Git index 的 symlink mode 不得冒充一般紀錄檔。"""
+        self.env_branch()
+        self.write('link-payload', 'some-target')
+        blob = self.git('hash-object', '-w', 'link-payload').stdout.strip()
+        (self.repo / 'link-payload').unlink()
+        self.write(NOTES, 'paired change\n')
+        self.git('add', NOTES)
+        self.git('update-index', '--cacheinfo', f'120000,{blob},{ENGLISH_NOTES}')
+        self.rejected(self.git('commit', '-m', 'symlink source', ok=False))
+        self.git('commit', '--no-verify', '-m', 'bypassed symlink')
+        self.rejected(self.git('push', 'origin', 'env/test', ok=False))
+
     def test_push_rejects_bad_history_even_after_revert(self):
         """略過 hook 並還原違規檔案，最終 diff 合法仍不得推送。"""
         self.env_branch()
@@ -155,7 +194,8 @@ class BranchGuardTests(unittest.TestCase):
         result = self.git('merge', '--no-commit', 'origin/main', ok=False)
         self.assertNotEqual(result.returncode, 0)
         self.write(NOTES, 'main 共用規則更新\n環境案例\n')
-        self.git('add', NOTES)
+        self.write(ENGLISH_NOTES, 'main common rules and environment case\n')
+        self.git('add', NOTES, ENGLISH_NOTES)
         self.git('commit', '-m', 'resolved sync')
         self.git('push', 'origin', 'env/test')
 

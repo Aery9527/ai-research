@@ -129,11 +129,11 @@ node scripts/install-git-hooks.mjs
 
 - 安裝只設定本 repo 的 `core.hooksPath=.githooks`，不修改全域設定，不自動 fetch、commit 或 push；重複執行可沿用相同設定。先確認本機已有 fetch 後的 origin/main。若其他 hooksPath 或預設 hooks 目錄有自訂內容，安裝停止，不覆蓋或串接。
 - [pre-commit](../.githooks/pre-commit)、[pre-merge-commit](../.githooks/pre-merge-commit)、[pre-push](../.githooks/pre-push) 共用 [檢查器](git-branch-guard.mjs)。hook 入口必須以 LF、Git mode 100755 版本化，Unix checkout 也必須可執行；缺少 Node 時操作會失敗，不放行。
-- main 可使用 selective staging。env/* 的已暫存、未暫存及未追蹤檔案只允許 [prompt-custom_ch.md](../cli-agents/prompt-custom_ch.md)，且普通紀錄提交前必須整合已 fetch 的 origin/main。Git 忽略檔案不在檢查範圍；但 diff 與 submodule 的 ignore 設定不得隱藏 gitlink 或子 repo dirty 變更。env 空提交及只改訊息的 amend 也會被拒絕。
+- main 可使用 selective staging。env/* 的已暫存、未暫存及未追蹤檔案只允許 [prompt-custom.md](../cli-agents/prompt-custom.md) 與 [prompt-custom_ch.md](../cli-agents/prompt-custom_ch.md)，且普通紀錄提交必須兩檔同時變更並保留為一般檔案；提交前必須整合已 fetch 的 origin/main。Git 忽略檔案不在檢查範圍；但 diff 與 submodule 的 ignore 設定不得隱藏 gitlink 或子 repo dirty 變更。env 空提交及只改訊息的 amend 也會被拒絕。
 - 非 fast-forward 同步先執行 `git merge --no-commit origin/main`，再執行 `git commit`。同步 commit 的非紀錄檔案必須等於 MERGE_HEAD；僅接受當時 fetch 後 origin/main tip 的單一 MERGE_HEAD。自動 merge hook 一律拒絕，包括 main 上的分歧 pull；fast-forward 由推送檢查補防。衝突、submodule checkout 漂移、子 repo 已修改或未追蹤內容，以及背景 fetch 改變 tip 時，停下詢問使用者，不自動修復。
 - push 僅支援 origin。main 或 env/* 必須推送到對應的同名 branch；HEAD 來源需要目前 branch 與目標一致。禁止分支刪除與 non-fast-forward 更新。tag 與其他非 head refs 不受 branch 規則限制。其他 remote、未知遠端舊物件、orphan 與 octopus 環境歷史均拒絕。
-- push 逐個檢查環境 commits；修改其他檔案後再還原，仍無法通過。同步 merge 允許帶入 main 既有 commits，非 main 的第二父本會被拒絕。main 拒絕引入已知本機或 origin 環境 refs 的獨有 commits；若 env 從未發布的本機 main 建立，可能因來源歧義被保守拒絕，錯誤會指出相關 env ref，交由使用者決定。
-- 限制：本機 hooks 可用 no-verify、Git 設定或修改 hook 略過；GitHub 網頁、PR、API 操作不在此防護範圍。refs 可能過期，hook 不連網；每次記錄仍須先 fetch。無法可靠辨識任意複製、squash 或 cherry-pick 的內容來源，也無法判斷衝突解決是否保留所有共用規則。
+- push 逐個檢查環境 commits 的成對變更與一般檔案存在性；修改其他檔案後再還原，仍無法通過。同步 merge 允許帶入 main 既有 commits，非 main 的第二父本會被拒絕。main 拒絕引入已知本機或 origin 環境 refs 的獨有 commits；若 env 從未發布的本機 main 建立，可能因來源歧義被保守拒絕，錯誤會指出相關 env ref，交由使用者決定。
+- 限制：本機 hooks 可用 no-verify、Git 設定或修改 hook 略過；GitHub 網頁、PR、API 操作不在此防護範圍。refs 可能過期，hook 不連網；每次記錄仍須先 fetch。無法可靠辨識任意複製、squash 或 cherry-pick 的內容來源，也無法判斷翻譯是否等價或衝突解決是否保留所有共用規則。同步 merge 不要求兩個紀錄檔都產生 diff；舊單檔環境歷史會被拒絕，須停下詢問遷移方式。
 - 設計見 [Git branch guard](sd-git-branch-guard.md)；以 `python -B -X utf8 -m unittest discover -s scripts/tests -p test_git_branch_guard.py -v` 執行 [隔離測試](tests/test_git_branch_guard.py)，僅操作暫存 bare remote 與 clone，不使用真實遠端。Windows／Git Bash 是本次驗證環境；macOS／Linux 需要另行實機驗證。
 
 ---

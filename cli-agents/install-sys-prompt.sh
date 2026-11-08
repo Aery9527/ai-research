@@ -8,7 +8,7 @@ if [[ -z "${HOME:-}" ]]; then
     exit 1
 fi
 
-prompt_sources=("$SCRIPT_DIR/prompt-user.md" "$SCRIPT_DIR/prompt-custom_ch.md")
+prompt_sources=("$SCRIPT_DIR/prompt-user.md" "$SCRIPT_DIR/prompt-custom.md")
 template_claude="$SCRIPT_DIR/claude-code/.claude/CLAUDE.md"
 template_codex="$SCRIPT_DIR/codex/.codex/AGENTS.md"
 template_copilot="$SCRIPT_DIR/github-copilot/.copilot/copilot-instructions.md"

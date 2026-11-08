@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const notes = 'cli-agents/prompt-custom_ch.md';
+const notes = ['cli-agents/prompt-custom.md', 'cli-agents/prompt-custom_ch.md'];
 const mainRef = 'refs/remotes/origin/main';
 
 // 執行 Git；非預期的結束碼不可當成安全狀態。
@@ -53,12 +53,28 @@ function branch() {
 
 // 驗證環境變更只能觸及紀錄檔；submodule 漂移也必須由使用者處理。
 function onlyNotes(changed, context = '工作區') {
-    const extra = changed.filter(path => path !== notes);
+    const extra = changed.filter(path => !notes.includes(path));
     if (extra.length) {
         const hint = context === '工作區'
             ? '若涉及 submodule，先用 git -C <path> status 確認內容，再詢問使用者；submodule update 只適用於指標漂移，不能清除已修改或未追蹤內容，不可自動還原或 stash。'
             : '這是已提交的違規內容，請停下詢問使用者如何處理歷史；工作區清理無法修正已提交的變更，不可自動改寫或 force-push。';
-        throw new Error(`env/* 只允許修改 ${notes}；${context} 的其他變更：${extra.map(path => JSON.stringify(path)).join(', ')}。${hint}`);
+        throw new Error(`env/* 只允許修改 ${notes.join('、')}；${context} 的其他變更：${extra.map(path => JSON.stringify(path)).join(', ')}。${hint}`);
+    }
+}
+
+// 一般環境提交必須同時變更兩份紀錄；翻譯與案例語意仍須由 agent 或 reviewer 核對。
+function pairedNotes(changed) {
+    onlyNotes(changed);
+    if (changed.length !== notes.length || !notes.every(path => changed.includes(path))) {
+        throw new Error('環境紀錄必須同時更新中英文兩檔，不接受單檔、空提交或只改訊息的 amend。');
+    }
+}
+
+// 兩份部署來源都必須保留為一般檔案，不能用刪除或 symlink 通過成對檢查。
+function recordFiles(tree) {
+    const entries = paths(['ls-tree', '-z', tree, '--', ...notes]);
+    if (entries.length !== notes.length || entries.some(entry => !/^100(?:644|755) blob /.test(entry))) {
+        throw new Error('中英文環境紀錄檔必須同時存在，且皆為一般檔案。');
     }
 }
 
@@ -104,26 +120,30 @@ function checkCommit() {
             throw new Error('同步只允許一個 MERGE_HEAD，且必須是目前 fetch 後的 origin/main tip；若背景 fetch 改變 tip，請停下重新確認。');
         }
         const tree = git(['write-tree']).stdout.trim();
+        recordFiles(tree);
         onlyNotes(paths(['diff', '--name-only', '--no-renames', '-z', merging[0], tree]));
     } else {
         if (!ancestor(mainRef, head)) throw new Error('請先 fetch origin，並將 origin/main merge 到環境 branch。');
         const staged = paths(['diff', '--cached', '--name-only', '--no-renames', '-z']);
-        onlyNotes(staged);
-        if (!staged.length) throw new Error('env/* 不接受沒有紀錄變更的空提交。');
+        pairedNotes(staged);
+        recordFiles(git(['write-tree']).stdout.trim());
     }
 }
 
 // 逐個驗證環境歷史，不能以還原後的最終 diff 掩蓋違規提交。
 function checkEnvironmentTip(tip) {
     if (!ancestor(mainRef, tip)) throw new Error('環境 branch 尚未整合 fetch 後的 origin/main。');
+    recordFiles(tip);
     onlyNotes(paths(['diff', '--name-only', '--no-renames', '-z', mainRef, tip]), `推送 tree ${tip}`);
     for (const sha of lines(git(['rev-list', '--reverse', '--topo-order', tip, '--not', mainRef]).stdout)) {
         const [, ...parents] = git(['rev-list', '--parents', '-n', '1', sha]).stdout.trim().split(' ');
         if (parents.length === 1) {
             const changed = paths(['diff', '--name-only', '--no-renames', '-z', parents[0], sha]);
             onlyNotes(changed, `commit ${sha}`);
-            if (!changed.length) throw new Error(`環境歷史含空提交 ${sha}。`);
+            pairedNotes(changed);
+            recordFiles(sha);
         } else if (parents.length === 2 && ancestor(parents[1], mainRef)) {
+            recordFiles(sha);
             onlyNotes(paths(['diff', '--name-only', '--no-renames', '-z', parents[1], sha]), `同步 commit ${sha}`);
         } else {
             throw new Error(`環境歷史含不合法來源、orphan 或 octopus merge：${sha}。`);

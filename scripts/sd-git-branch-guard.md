@@ -37,6 +37,7 @@ flowchart LR
 - Git 2.24 以上與 Node.js 18 以上必須可從 Git 呼叫的 shell PATH 執行；每個 clone 必須另行啟用 hooks。
 - 僅支援名為 origin 的 remote。分支建立與更新只允許 main 或 env/*；分支刪除、非 fast-forward 更新、detached HEAD 與 orphan 提交拒絕；tag 與其他非 head refs 不受分支規則限制。
 - 非 fast-forward 同步使用 merge --no-commit，再以 commit 驗證 MERGE_HEAD。自動 merge 提早拒絕；白名單檔案的衝突由使用者決定處理，不自動解決。submodule checkout 漂移及子 repo 的已修改或未追蹤內容也會阻擋提交，先查狀態再由使用者處理，不自動清理。
+- 一般環境提交必須同時變更中英文紀錄檔，兩檔皆須保留為一般檔案；同步 merge 可只改任一檔或不改紀錄檔。檔案成對檢查不證明翻譯等價，語意由 agent／reviewer 核對；舊單檔環境歷史須由使用者決定遷移方式。
 - pre-push 檢查提交歷史及實際目標 refs，不以乾淨工作區或最終 diff 代替逐筆驗證。main 的來源判定依已知 env refs；共享未發布歷史有歧義時保守拒絕。
 - hooks 依本機 fetch 後的 origin/main 判斷；不在 hook 內連網。refs 可能過期，紀錄流程仍必須先 fetch；背景 fetch 改變同步 tip 時必須重新確認。
 - hooks 可停用或略過，不涵蓋 GitHub 網頁、PR 或 API 操作，也不能可靠辨識任意複製、squash 或 cherry-pick 的語意來源。

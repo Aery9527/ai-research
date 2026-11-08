@@ -18,7 +18,7 @@ git submodule update --init --recursive
 ```
 
 - 要一次安裝 Claude Code CLI、Codex CLI、共用系統提示詞等本機工具，執行 [scripts/install-all.ps1 / .sh](scripts/SCRIPTS.md#install-all)；各安裝腳本的前置條件、行為與風險看 [一鍵安裝腳本](cli-agents/CLI-AGENTS.md#一鍵安裝腳本)。
-- 要調整工作環境專用規則，只在對應的 `env/*` branch 修改 [prompt-custom_ch.md](cli-agents/prompt-custom_ch.md)，再執行 [共用 Prompt 安裝器](cli-agents/CLI-AGENTS.md#共用-prompt-安裝器行為)，即可部署目前 branch 的案例到三個工具；`main` 只維護共用規則。
+- 要調整工作環境專用規則，先在對應的 `env/*` branch 同步遠端 main，再成對更新 [prompt-custom.md](cli-agents/prompt-custom.md) 與 [prompt-custom_ch.md](cli-agents/prompt-custom_ch.md)；commit 並 push 成功後，才執行 [共用 Prompt 安裝器](cli-agents/CLI-AGENTS.md#共用-prompt-安裝器行為)，將英文規則與案例部署到三個工具。`main` 只維護共用規則。
 - 每個 clone 必須另行執行 `node scripts/install-git-hooks.mjs` 啟用 [Git branch hooks](scripts/SCRIPTS.md#git-branch-hooks)；需要 Git 2.24 以上與 Node.js 18 以上，已有其他自訂 hooks 時會停止。
 - 要讓 Claude Code 讀取專案 skills，使用 [Link Agent Skills](scripts/SCRIPTS.md#link-agent-skills) 建立本機連結；Windows 執行 [link-agent-skills.ps1](scripts/link-agent-skills.ps1)，macOS / Linux 執行 [link-agent-skills.sh](scripts/link-agent-skills.sh)，選擇 `1`。
 

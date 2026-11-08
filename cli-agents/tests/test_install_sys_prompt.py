@@ -17,7 +17,7 @@ TEMPLATES = {
 SOURCES = {
     **{source: f"# 工具範本 {index}" for index, source in enumerate(TEMPLATES)},
     "prompt-user.md": "# 使用者規則",
-    "prompt-custom_ch.md": "# 環境注意事項\nAGENT_ENV_NOTES_FILE",
+    "prompt-custom.md": "# Environment Notes\nC:/record source/prompt-custom.md",
 }
 
 
@@ -54,15 +54,16 @@ class PromptInstallTests(unittest.TestCase):
             path = source / relative
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8")
+        (source / 'prompt-custom_ch.md').write_text('中文對照不應部署', encoding='utf-8')
         for suffix in (".ps1", ".sh"):
             shutil.copyfile(INSTALLER_ROOT / f"install-sys-prompt{suffix}", source / f"install-sys-prompt{suffix}")
         return source, home
 
     def install(self, runtime, paths):
-        """只在子程序指定測試家目錄，並保留環境變數字面內容。"""
+        """只在子程序指定測試家目錄，不修改實際使用者設定。"""
         _, command, suffix = runtime
         source, home = paths
-        env = dict(os.environ, HOME=home.as_posix(), USERPROFILE=str(home), AGENT_ENV_NOTES_FILE="DO_NOT_EXPAND")
+        env = dict(os.environ, HOME=home.as_posix(), USERPROFILE=str(home))
         return subprocess.run(
             [*command, (source / f"install-sys-prompt{suffix}").as_posix()],
             env=env, capture_output=True, encoding="utf-8", errors="replace", timeout=30,
@@ -75,7 +76,7 @@ class PromptInstallTests(unittest.TestCase):
             actual = (home / target).read_text(encoding="utf-8-sig")
             expected = [
                 (source / relative).read_text(encoding="utf-8-sig").strip()
-                for relative in (template, "prompt-user.md", "prompt-custom_ch.md")
+                for relative in (template, "prompt-user.md", "prompt-custom.md")
             ]
             self.assertEqual(actual.strip(), "\n\n".join(expected).strip())
 
@@ -89,7 +90,7 @@ class PromptInstallTests(unittest.TestCase):
                 self.assert_merged(paths)
                 self.assertEqual(list(paths[1].rglob("*_????????????")), [])
                 originals = {target: (paths[1] / target).read_bytes() for target in TEMPLATES.values()}
-                (paths[0] / "prompt-custom_ch.md").write_text("# 新環境規則", encoding="utf-8")
+                (paths[0] / "prompt-custom.md").write_text("# 新環境規則", encoding="utf-8")
                 result = self.install(runtime, paths)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assert_merged(paths)
@@ -130,7 +131,7 @@ class PromptInstallTests(unittest.TestCase):
         for runtime in self.runtimes:
             with self.subTest(runtime=runtime[0]):
                 paths = self.fixture(runtime[0])
-                (paths[0] / "prompt-custom_ch.md").write_bytes(b"")
+                (paths[0] / "prompt-custom.md").write_bytes(b"")
                 result = self.install(runtime, paths)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assert_merged(paths)
