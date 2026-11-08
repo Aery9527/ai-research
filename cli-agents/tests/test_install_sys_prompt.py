@@ -17,7 +17,7 @@ TEMPLATES = {
 SOURCES = {
     **{source: f"# 工具範本 {index}" for index, source in enumerate(TEMPLATES)},
     "prompt-user.md": "# 使用者規則",
-    "prompt-custom.md": "# 環境注意事項\nAGENT_ENV_NOTES_FILE",
+    "prompt-custom_ch.md": "# 環境注意事項\nAGENT_ENV_NOTES_FILE",
 }
 
 
@@ -75,7 +75,7 @@ class PromptInstallTests(unittest.TestCase):
             actual = (home / target).read_text(encoding="utf-8-sig")
             expected = [
                 (source / relative).read_text(encoding="utf-8-sig").strip()
-                for relative in (template, "prompt-user.md", "prompt-custom.md")
+                for relative in (template, "prompt-user.md", "prompt-custom_ch.md")
             ]
             self.assertEqual(actual.strip(), "\n\n".join(expected).strip())
 
@@ -89,7 +89,7 @@ class PromptInstallTests(unittest.TestCase):
                 self.assert_merged(paths)
                 self.assertEqual(list(paths[1].rglob("*_????????????")), [])
                 originals = {target: (paths[1] / target).read_bytes() for target in TEMPLATES.values()}
-                (paths[0] / "prompt-custom.md").write_text("# 新環境規則", encoding="utf-8")
+                (paths[0] / "prompt-custom_ch.md").write_text("# 新環境規則", encoding="utf-8")
                 result = self.install(runtime, paths)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assert_merged(paths)
@@ -130,7 +130,7 @@ class PromptInstallTests(unittest.TestCase):
         for runtime in self.runtimes:
             with self.subTest(runtime=runtime[0]):
                 paths = self.fixture(runtime[0])
-                (paths[0] / "prompt-custom.md").write_bytes(b"")
+                (paths[0] / "prompt-custom_ch.md").write_bytes(b"")
                 result = self.install(runtime, paths)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assert_merged(paths)

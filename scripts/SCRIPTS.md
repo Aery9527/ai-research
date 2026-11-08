@@ -18,6 +18,7 @@ flowchart LR
 - [腳本詳述](#腳本詳述)
   - [Link Agent Skills](#link-agent-skills)
   - [Install All](#install-all)
+  - [Git Branch Hooks](#git-branch-hooks)
   - [`remove-local-git-user.ps1`](#remove-local-git-userps1)
   - [`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)
   - [`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1)
@@ -50,6 +51,8 @@ flowchart LR
 
 | 腳本 | 類型 | 用途 | 是否修改檔案 | 備註 |
 |------|------|------|--------------|------|
+| [install-git-hooks.mjs](install-git-hooks.mjs) | Node.js | 在本 clone 啟用版本化 [Git hooks](../.githooks/) | 只寫入本機 Git config | Git 2.24+、Node.js 18+；每個 clone 各自安裝；不覆蓋其他自訂 hooks |
+| [git-branch-guard.mjs](git-branch-guard.mjs) | Node.js | 共用的 commit、merge 與 push 檢查器 | 不修改工作區或 refs；merge 提交檢查會將 index 寫成 Git tree 物件 | 由 hooks 呼叫；拒絕時回傳非零狀態；驗收見 [隔離測試](tests/test_git_branch_guard.py) |
 | [`link-agent-skills.ps1`](./link-agent-skills.ps1) | PowerShell | 建立、修復或移除本機 `.claude/skills` 到 [.agents/skills](../.agents/skills/) 的 Windows junction | 會，只管理本機連結 | 保留來源內容；遇到實體目錄中止；支援 PowerShell 5.1 以上 |
 | [`link-agent-skills.sh`](./link-agent-skills.sh) | Bash | 建立、修復或移除本機 `.claude/skills` 到 [.agents/skills](../.agents/skills/) 的 Unix symlink | 會，只管理本機連結 | 保留來源內容；遇到實體目錄中止；需要原生 symlink 支援 |
 | [`install-all.ps1`](./install-all.ps1) | PowerShell | 互動式選單，依選擇呼叫 [`install-cc.ps1`](../cli-agents/claude-code/install-cc.ps1)、[`install-cx.ps1`](../cli-agents/codex/install-cx.ps1)、[`tool/pwsh/install.ps1`](../tool/pwsh/install.ps1)、[`install-sys-prompt.ps1`](../cli-agents/install-sys-prompt.ps1)、[`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)、[`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1) | 不直接修改檔案，但會觸發被呼叫腳本對使用者家目錄的修改 | 任一項失敗即中斷，不繼續安裝其餘項目；檔案含中文字，需要 UTF-8 BOM 才能被 PowerShell 5.1 正確解析 |
@@ -116,6 +119,25 @@ bash ./scripts/link-agent-skills.sh
 
 ---
 
+### Git Branch Hooks
+
+- [安裝入口](install-git-hooks.mjs) 需要 Git 2.24 以上與 Node.js 18 以上。兩者必須可從 Git 使用的 shell PATH 執行；clone 前不會自動安裝 hooks，每個 clone 取得後都必須執行一次：
+
+```sh
+node scripts/install-git-hooks.mjs
+```
+
+- 安裝只設定本 repo 的 `core.hooksPath=.githooks`，不修改全域設定，不自動 fetch、commit 或 push；重複執行可沿用相同設定。先確認本機已有 fetch 後的 origin/main。若其他 hooksPath 或預設 hooks 目錄有自訂內容，安裝停止，不覆蓋或串接。
+- [pre-commit](../.githooks/pre-commit)、[pre-merge-commit](../.githooks/pre-merge-commit)、[pre-push](../.githooks/pre-push) 共用 [檢查器](git-branch-guard.mjs)。hook 入口必須以 LF、Git mode 100755 版本化，Unix checkout 也必須可執行；缺少 Node 時操作會失敗，不放行。
+- main 可使用 selective staging。env/* 的已暫存、未暫存及未追蹤檔案只允許 [prompt-custom_ch.md](../cli-agents/prompt-custom_ch.md)，且普通紀錄提交前必須整合已 fetch 的 origin/main。Git 忽略檔案不在檢查範圍；但 diff 與 submodule 的 ignore 設定不得隱藏 gitlink 或子 repo dirty 變更。env 空提交及只改訊息的 amend 也會被拒絕。
+- 非 fast-forward 同步先執行 `git merge --no-commit origin/main`，再執行 `git commit`。同步 commit 的非紀錄檔案必須等於 MERGE_HEAD；僅接受當時 fetch 後 origin/main tip 的單一 MERGE_HEAD。自動 merge hook 一律拒絕，包括 main 上的分歧 pull；fast-forward 由推送檢查補防。衝突、submodule checkout 漂移、子 repo 已修改或未追蹤內容，以及背景 fetch 改變 tip 時，停下詢問使用者，不自動修復。
+- push 僅支援 origin。main 或 env/* 必須推送到對應的同名 branch；HEAD 來源需要目前 branch 與目標一致。禁止分支刪除與 non-fast-forward 更新。tag 與其他非 head refs 不受 branch 規則限制。其他 remote、未知遠端舊物件、orphan 與 octopus 環境歷史均拒絕。
+- push 逐個檢查環境 commits；修改其他檔案後再還原，仍無法通過。同步 merge 允許帶入 main 既有 commits，非 main 的第二父本會被拒絕。main 拒絕引入已知本機或 origin 環境 refs 的獨有 commits；若 env 從未發布的本機 main 建立，可能因來源歧義被保守拒絕，錯誤會指出相關 env ref，交由使用者決定。
+- 限制：本機 hooks 可用 no-verify、Git 設定或修改 hook 略過；GitHub 網頁、PR、API 操作不在此防護範圍。refs 可能過期，hook 不連網；每次記錄仍須先 fetch。無法可靠辨識任意複製、squash 或 cherry-pick 的內容來源，也無法判斷衝突解決是否保留所有共用規則。
+- 設計見 [Git branch guard](sd-git-branch-guard.md)；以 `python -B -X utf8 -m unittest discover -s scripts/tests -p test_git_branch_guard.py -v` 執行 [隔離測試](tests/test_git_branch_guard.py)，僅操作暫存 bare remote 與 clone，不使用真實遠端。Windows／Git Bash 是本次驗證環境；macOS／Linux 需要另行實機驗證。
+
+---
+
 ### Install All
 
 #### 目的
@@ -137,7 +159,7 @@ bash ./scripts/link-agent-skills.sh
 | `1` | 只安裝 Claude Code CLI（呼叫 [`install-cc.ps1`/`.sh`](../cli-agents/claude-code/)） |
 | `2` | 只安裝 Codex CLI（呼叫 [`install-cx.ps1`/`.sh`](../cli-agents/codex/)） |
 | `3` | 只安裝 PowerShell 腳本（呼叫 [`tool/pwsh/install.ps1`](../tool/pwsh/install.ps1)；Bash 版僅顯示略過訊息） |
-| `4` | 只安裝共用系統提示詞（呼叫 [`install-sys-prompt.ps1`/`.sh`](../cli-agents/)） |
+| `4` | 顯示 `user prompt (install-user-prompt)`，實際呼叫仍為 [`install-sys-prompt.ps1`/`.sh`](../cli-agents/) |
 | `5` | 只設定 Claude Desktop 熱鍵（呼叫 [`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)；Bash 版僅顯示略過訊息） |
 | `6` | 只設定 ChatGPT Desktop 熱鍵（呼叫 [`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1)；Bash 版僅顯示略過訊息） |
 | 逗號分隔多選，例如 `1,4` | 安裝多項，執行順序固定為 1 → 2 → 3 → 4 → 5 → 6，與輸入順序無關 |
@@ -180,7 +202,7 @@ bash ./scripts/install-all.sh
   [1] Claude Code CLI (install-cc)
   [2] Codex CLI (install-cx)
   [3] PowerShell 腳本 (install.ps1)
-  [4] 系統提示詞 (install-sys-prompt)
+  [4] user prompt (install-user-prompt)
   [5] Claude Desktop 熱鍵 (setup-cc-desktop-ahk)
   [6] ChatGPT Desktop 熱鍵 (setup-cx-desktop-ahk)
 
@@ -198,7 +220,7 @@ bash ./scripts/install-all.sh
 === [3] PowerShell 腳本 (install.ps1) ===
 ...
 
-=== [4] 系統提示詞 (install-sys-prompt) ===
+=== [4] user prompt (install-user-prompt) ===
 ...
 
 === [5] Claude Desktop 熱鍵 (setup-cc-desktop-ahk) ===

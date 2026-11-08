@@ -22,7 +22,7 @@ printf '\n'
 printf '  [1] Claude Code CLI (install-cc)\n'
 printf '  [2] Codex CLI (install-cx)\n'
 printf '  [3] PowerShell 腳本 (install.ps1) - 僅適用 Windows，這裡會自動略過\n'
-printf '  [4] 系統提示詞 (install-sys-prompt)\n'
+printf '  [4] user prompt (install-user-prompt)\n'
 printf '  [5] Claude Desktop 熱鍵 (setup-cc-desktop-ahk) - 僅適用 Windows，這裡會自動略過\n'
 printf '  [6] ChatGPT Desktop 熱鍵 (setup-cx-desktop-ahk) - 僅適用 Windows，這裡會自動略過\n'
 printf '\n'
@@ -73,7 +73,7 @@ for key in $selected; do
             printf '  此項目僅適用於 Windows，Mac 版本自動略過。\n'
             ;;
         4)
-            printf '=== [4] 系統提示詞 ===\n'
+            printf '=== [4] user prompt (install-user-prompt) ===\n'
             bash "$REPO_ROOT/cli-agents/install-sys-prompt.sh"
             ;;
         5)

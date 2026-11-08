@@ -33,7 +33,7 @@ $items = [ordered]@{
     '1' = [PSCustomObject]@{ Label = 'Claude Code CLI (install-cc)';   Path = Join-Path $repoRoot 'cli-agents\claude-code\install-cc.ps1' }
     '2' = [PSCustomObject]@{ Label = 'Codex CLI (install-cx)';        Path = Join-Path $repoRoot 'cli-agents\codex\install-cx.ps1' }
     '3' = [PSCustomObject]@{ Label = 'PowerShell 腳本 (install.ps1)'; Path = Join-Path $repoRoot 'tool\pwsh\install.ps1' }
-    '4' = [PSCustomObject]@{ Label = '系統提示詞 (install-sys-prompt)'; Path = Join-Path $repoRoot 'cli-agents\install-sys-prompt.ps1' }
+    '4' = [PSCustomObject]@{ Label = 'user prompt (install-user-prompt)'; Path = Join-Path $repoRoot 'cli-agents\install-sys-prompt.ps1' }
     '5' = [PSCustomObject]@{ Label = 'Claude Desktop 熱鍵 (setup-cc-desktop-ahk)'; Path = Join-Path $repoRoot 'scripts\setup-cc-desktop-ahk.ps1' }
     '6' = [PSCustomObject]@{ Label = 'ChatGPT Desktop 熱鍵 (setup-cx-desktop-ahk)'; Path = Join-Path $repoRoot 'scripts\setup-cx-desktop-ahk.ps1' }
 }

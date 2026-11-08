@@ -5,3 +5,5 @@
 cli-agents/claude-code/**/*.sh text eol=lf
 cli-agents/install-sys-prompt.sh text eol=lf
 scripts/link-agent-skills.sh text eol=lf
+.githooks/* text eol=lf
+scripts/*.mjs text eol=lf

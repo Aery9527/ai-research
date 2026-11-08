@@ -9,7 +9,7 @@ $sourceRoot = $PSScriptRoot
 $homeRoot = $env:USERPROFILE
 $promptSources = @(
     (Join-Path $sourceRoot 'prompt-user.md')
-    (Join-Path $sourceRoot 'prompt-custom.md')
+    (Join-Path $sourceRoot 'prompt-custom_ch.md')
 )
 $installItems = @(
     [PSCustomObject]@{
