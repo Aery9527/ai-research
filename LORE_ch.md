@@ -30,6 +30,16 @@
 - 啟用本機 [branch hooks](scripts/SCRIPTS.md#git-branch-hooks) 後，非 fast-forward 同步必須使用 `git merge --no-commit origin/main`，再執行 `git commit`；自動 merge hook 會拒絕尚無法驗證來源的提交。使用者決定處理方式後，可以解決 [prompt-custom.md](cli-agents/prompt-custom.md) 與 [prompt-custom_ch.md](cli-agents/prompt-custom_ch.md) 內的衝突；同步 commit 的非紀錄檔案必須與其 main 父本一致。submodule checkout 漂移、已修改內容與未追蹤內容都必須先檢查，由使用者明確處理後才能提交；嚴禁由 hooks 自動清理。
 - 本機 hooks 用於防誤操作，並非伺服器端強制執行：可以停用或略過，也不涵蓋 GitHub 網頁、PR 或 API 更新。main 歷史檢查依賴已知環境 refs，無法可靠辨識任意複製、squash 或 cherry-pick 的來源；詳見 [branch guard 限制](scripts/sd-git-branch-guard.md#限制)。
 
+### 一般修改與分支返回流程
+
+- 此流程適用於一般 repo 修改，不適用於環境紀錄。分支切換必須由 agent 執行；hooks 只驗證操作，不會切換 branch。
+
+1. 開始前，必須在任務脈絡記住起始 branch。起始為 `env/*` 時，必須以它作為返回分支；否則，若尚未知道或指定返回的環境分支，必須詢問使用者是否返回環境分支及其名稱，嚴禁猜測或把本次分支狀態寫入 agent 規則檔。
+2. 每次切換 branch 前，必須確認工作區與 index 乾淨，包含未追蹤檔案。修改前，若尚未位於 `main`，必須先切至 `main`，再 fetch `origin/main`、僅以 fast-forward 更新 main，並確認 `main` 與 `origin/main` 相同。更新 `main` 後、修改前，必須以 `git status --porcelain=v1 --untracked-files=all --ignore-submodules=none` 再次確認乾淨狀態，包含 submodule checkout 漂移；不乾淨時必須停下詢問，嚴禁自動執行 `git submodule update`。預定的乾淨切換不必再次確認；branch 非預期、切換受阻、本機提交領先 `origin/main` 或歷史分歧時，必須停下詢問使用者。
+3. 必須在 `main` 完成修改、審查、commit 與 push；push 前必須檢查 `origin/main..main`，確認只包含本次任務已審查的提交。此流程嚴禁從 `main` 部署 user prompt。使用者選擇不返回環境分支時，必須在 `main` 結束，略過第 4–5 步，並告知未執行 prompt 部署。
+4. 工作區乾淨時，必須切回記住的環境分支，fetch 最新遠端 `main`，再依既有 hooks 規範 merge `origin/main`。需要 merge commit 時，必須驗證並提交同步結果；fast-forward 或 already-up-to-date 不得建立空提交。衝突或其他失敗必須停下詢問，嚴禁自動 stash、丟棄變更、解決衝突或 force-push。
+5. 必須 push 更新後的環境分支，再從該分支執行 repo 的 [Windows prompt 安裝器](cli-agents/install-sys-prompt.ps1)或 [macOS/Linux prompt 安裝器](cli-agents/install-sys-prompt.sh)，重新安裝英文 prompt。除非使用者明確指定其他結束分支，任務必須在記住的環境分支結束。
+
 ## 文件結構
 
 - 所有 agent 共用的規則放在 [LORE_ch.md](LORE_ch.md)；host 入口檔只放轉介或僅適用該 host 的規則。
