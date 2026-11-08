@@ -1,6 +1,6 @@
 # Environment Notes
 
-- Environment record file: `<absolute-repository-path>/cli-agents/prompt-custom.md`.
+- Environment record file: `C:\Users\User\AeryProjects\ai-research\cli-agents\prompt-custom.md`.
   On each `env/*` branch, MUST replace the placeholder with that environment's full absolute path and set the corresponding Chinese path in [prompt-custom_ch.md](prompt-custom_ch.md). MUST NOT put machine-specific paths on `main`.
   MUST resolve companion files and installers relative to the configured record file's directory, not the current working directory or the installed user prompt.
 - When the user decides to record a work-environment issue, MUST use the configured record file and its Chinese companion in the same directory.

@@ -1,6 +1,6 @@
 # 環境注意事項
 
-- 工作環境紀錄檔：`<absolute-repository-path>/cli-agents/prompt-custom_ch.md`。
+- 工作環境紀錄檔：`C:\Users\User\AeryProjects\ai-research\cli-agents\prompt-custom_ch.md`。
   每個 `env/*` branch 必須將佔位內容改為該環境的完整絕對路徑，並在 [prompt-custom.md](prompt-custom.md) 設定對應英文路徑；嚴禁將機器專屬路徑放入 `main`。
   對照檔與安裝器必須以設定的紀錄檔所在目錄定位，嚴禁以目前工作目錄或已安裝的 user prompt 所在目錄定位。
 - 使用者決定記錄工作環境問題時，必須使用已設定的紀錄檔與同目錄的英文對照檔。
