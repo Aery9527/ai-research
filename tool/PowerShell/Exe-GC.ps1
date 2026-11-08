@@ -1,1 +1,0 @@
-copilot --allow-all-tools @args

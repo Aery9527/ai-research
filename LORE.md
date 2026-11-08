@@ -18,7 +18,7 @@
 - When adding, removing, renaming, or materially changing a script under [scripts](scripts/), MUST update [SCRIPTS.md](scripts/SCRIPTS.md) in the same slice; a new script MUST document at least purpose, arguments, behavior, risks or side effects, and a minimal usage example.
 - When a script change makes an entry or summary in [README.md](README.md) stale, MUST update README.md in the same slice.
 - When adding, removing, or materially changing a one-click installer under [cli-agents](cli-agents/) or [tool](tool/), MUST update the one-click installer table in [CLI-AGENTS.md](cli-agents/CLI-AGENTS.md) in the same slice.
-- [install-statusline.ps1](cli-agents/claude-code/install-statusline.ps1) and [tool/PowerShell/install.ps1](tool/PowerShell/install.ps1) overwrite existing files at their destination without backup.
+- [install-statusline.ps1](cli-agents/claude-code/install-statusline.ps1) and [tool/pwsh/install.ps1](tool/pwsh/install.ps1) overwrite existing files at their destination without backup.
 
 ## Document Structure
 

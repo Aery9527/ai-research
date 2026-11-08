@@ -52,7 +52,7 @@ flowchart LR
 |------|------|------|--------------|------|
 | [`link-agent-skills.ps1`](./link-agent-skills.ps1) | PowerShell | 建立、修復或移除本機 `.claude/skills` 到 [.agents/skills](../.agents/skills/) 的 Windows junction | 會，只管理本機連結 | 保留來源內容；遇到實體目錄中止；支援 PowerShell 5.1 以上 |
 | [`link-agent-skills.sh`](./link-agent-skills.sh) | Bash | 建立、修復或移除本機 `.claude/skills` 到 [.agents/skills](../.agents/skills/) 的 Unix symlink | 會，只管理本機連結 | 保留來源內容；遇到實體目錄中止；需要原生 symlink 支援 |
-| [`install-all.ps1`](./install-all.ps1) | PowerShell | 互動式選單，依選擇呼叫 [`install-cc.ps1`](../cli-agents/claude-code/install-cc.ps1)、[`install-cx.ps1`](../cli-agents/codex/install-cx.ps1)、[`tool/PowerShell/install.ps1`](../tool/PowerShell/install.ps1)、[`install-sys-prompt.ps1`](../cli-agents/install-sys-prompt.ps1)、[`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)、[`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1) | 不直接修改檔案，但會觸發被呼叫腳本對使用者家目錄的修改 | 任一項失敗即中斷，不繼續安裝其餘項目；檔案含中文字，需要 UTF-8 BOM 才能被 PowerShell 5.1 正確解析 |
+| [`install-all.ps1`](./install-all.ps1) | PowerShell | 互動式選單，依選擇呼叫 [`install-cc.ps1`](../cli-agents/claude-code/install-cc.ps1)、[`install-cx.ps1`](../cli-agents/codex/install-cx.ps1)、[`tool/pwsh/install.ps1`](../tool/pwsh/install.ps1)、[`install-sys-prompt.ps1`](../cli-agents/install-sys-prompt.ps1)、[`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)、[`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1) | 不直接修改檔案，但會觸發被呼叫腳本對使用者家目錄的修改 | 任一項失敗即中斷，不繼續安裝其餘項目；檔案含中文字，需要 UTF-8 BOM 才能被 PowerShell 5.1 正確解析 |
 | [`install-all.sh`](./install-all.sh) | Bash | `install-all.ps1` 的 macOS/Linux 對應版本，呼叫 [`install-cc.sh`](../cli-agents/claude-code/install-cc.sh)、[`install-cx.sh`](../cli-agents/codex/install-cx.sh)、[`install-sys-prompt.sh`](../cli-agents/install-sys-prompt.sh) | 不直接修改檔案，但會觸發被呼叫腳本對使用者家目錄的修改 | 選項 3（PowerShell 腳本）、5（Claude Desktop 熱鍵）、6（ChatGPT Desktop 熱鍵）在這個版本僅顯示略過訊息，不執行任何動作；任一項失敗即中斷 |
 | [`remove-local-git-user.ps1`](./remove-local-git-user.ps1) | PowerShell | 遞迴掃描指定路徑下的 Git repository / worktree，移除 local git config 中的 `[user]` section | 會，直接覆寫 Git config | 不建立 backup；遇到異常 config 會跳過 |
 | [`setup-cc-desktop-ahk.ps1`](./setup-cc-desktop-ahk.ps1) | PowerShell | 查詢 Claude Desktop 的 AppID，缺 AutoHotkey v2 時用 winget 安裝，寫入切換 Claude Desktop 顯示/隱藏的 hotkey 腳本並設定開機自動執行 | 會，寫入 `$env:LOCALAPPDATA\ClaudeHotkey\` 與 Startup 資料夾（repo 之外） | 找不到唯一的 Claude Desktop AppID 時會直接中止；缺 winget 時需手動安裝 AutoHotkey v2 |
@@ -120,7 +120,7 @@ bash ./scripts/link-agent-skills.sh
 
 #### 目的
 
-[`install-all.ps1`](./install-all.ps1) 與 [`install-all.sh`](./install-all.sh) 是一鍵安裝的選單入口，讓使用者不用分別記住並手動執行 [`install-cc.ps1`/`.sh`](../cli-agents/claude-code/)、[`install-cx.ps1`/`.sh`](../cli-agents/codex/)、[`tool/PowerShell/install.ps1`](../tool/PowerShell/install.ps1)、[`install-sys-prompt.ps1`/`.sh`](../cli-agents/)、[`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)、[`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1) 這幾支各自獨立的安裝腳本。
+[`install-all.ps1`](./install-all.ps1) 與 [`install-all.sh`](./install-all.sh) 是一鍵安裝的選單入口，讓使用者不用分別記住並手動執行 [`install-cc.ps1`/`.sh`](../cli-agents/claude-code/)、[`install-cx.ps1`/`.sh`](../cli-agents/codex/)、[`tool/pwsh/install.ps1`](../tool/pwsh/install.ps1)、[`install-sys-prompt.ps1`/`.sh`](../cli-agents/)、[`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)、[`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1) 這幾支各自獨立的安裝腳本。
 
 兩個版本功能相同，差異在於平台限制：
 
@@ -136,7 +136,7 @@ bash ./scripts/link-agent-skills.sh
 | 留空 或 `0` | 全部安裝（依固定順序 1 → 2 → 3 → 4 → 5 → 6） |
 | `1` | 只安裝 Claude Code CLI（呼叫 [`install-cc.ps1`/`.sh`](../cli-agents/claude-code/)） |
 | `2` | 只安裝 Codex CLI（呼叫 [`install-cx.ps1`/`.sh`](../cli-agents/codex/)） |
-| `3` | 只安裝 PowerShell 腳本（呼叫 [`tool/PowerShell/install.ps1`](../tool/PowerShell/install.ps1)；Bash 版僅顯示略過訊息） |
+| `3` | 只安裝 PowerShell 腳本（呼叫 [`tool/pwsh/install.ps1`](../tool/pwsh/install.ps1)；Bash 版僅顯示略過訊息） |
 | `4` | 只安裝共用系統提示詞（呼叫 [`install-sys-prompt.ps1`/`.sh`](../cli-agents/)） |
 | `5` | 只設定 Claude Desktop 熱鍵（呼叫 [`setup-cc-desktop-ahk.ps1`](#setup-cc-desktop-ahkps1)；Bash 版僅顯示略過訊息） |
 | `6` | 只設定 ChatGPT Desktop 熱鍵（呼叫 [`setup-cx-desktop-ahk.ps1`](#setup-cx-desktop-ahkps1)；Bash 版僅顯示略過訊息） |

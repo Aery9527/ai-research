@@ -79,15 +79,15 @@ flowchart TD
     accTitle: AI CLI 捷徑的腳本執行順序
     accDescr: 一般、Go 與 Java 捷徑分別依序設定環境，再依函數名稱選擇對應的 CLI 啟動腳本。
     subgraph General["一般環境"]
-        AgentEntry["acc / agc / acx"] -->|先載入| AgentDev["Set-DevEnv.ps1"]
+        AgentEntry["acc / acx"] -->|先載入| AgentDev["Set-DevEnv.ps1"]
     end
     subgraph Go["Go 環境"]
-        GoEntry["gcc / ggc / gcx"] -->|先載入| GoDev["Set-DevEnv.ps1"]
+        GoEntry["goc / gcx"] -->|先載入| GoDev["Set-DevEnv.ps1"]
         GoDev -->|再載入| GoEnv["Set-GoEnv.ps1"]
         GoEnv -->|再載入| GoVersion["Set-GoVersion.ps1"]
     end
     subgraph Java["Java 環境"]
-        JavaEntry["jcc / jgc / jcx"] -->|先載入| JavaDev["Set-DevEnv.ps1"]
+        JavaEntry["jcc / jcx"] -->|先載入| JavaDev["Set-DevEnv.ps1"]
         JavaDev -->|再載入| JavaEnv["Set-JavaEnv.ps1"]
         JavaEnv -->|再載入| JavaVersion["Set-JavaVersion.ps1"]
     end
@@ -101,8 +101,7 @@ flowchart TD
 
 | CLI | 一般環境 | Go 環境 | Java 環境 | 最後執行的腳本與命令 |
 |---|---|---|---|---|
-| Claude Code | `acc` | `gcc` | `jcc` | [Exe-CC.ps1](Exe-CC.ps1)：`claude --permission-mode bypassPermissions @args` |
-| GitHub Copilot | `agc` | `ggc` | `jgc` | [Exe-GC.ps1](Exe-GC.ps1)：`copilot --allow-all-tools @args` |
+| Claude Code | `acc` | `goc` | `jcc` | [Exe-CC.ps1](Exe-CC.ps1)：`claude --permission-mode bypassPermissions @args` |
 | Codex | `acx` | `gcx` | `jcx` | [Exe-CX.ps1](Exe-CX.ps1)：`codex --sandbox danger-full-access -a never @args` |
 
 | 環境設定腳本 | 設定內容 |
@@ -128,7 +127,7 @@ flowchart TD
 
 | 函數 | 切換目的地 |
 |---|---|
-| `aws` | `$HOME/AeryProjects` |
+| `caws` | `$HOME/AeryProjects` |
 | `gws` | `$HOME/GolangProjects` |
 | `jws` | `$HOME/JavaProjects` |
 

@@ -1,4 +1,6 @@
-﻿$documents = [Environment]::GetFolderPath([Environment+SpecialFolder]::MyDocuments)
+$ErrorActionPreference = 'Stop'
+
+$documents = [Environment]::GetFolderPath([Environment+SpecialFolder]::MyDocuments)
 $profileDest = Join-Path $documents "PowerShell"
 $toolDest = Join-Path $HOME ".config\powershell"
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Menu-driven installer for Claude Code CLI and Codex CLI.
 # Windows counterpart: install-all.ps1 (also installs the PowerShell profile via
-# tool/PowerShell/install.ps1, item 3, and the desktop-app hotkey scripts via
+# tool/pwsh/install.ps1, item 3, and the desktop-app hotkey scripts via
 # scripts/setup-cc-desktop-ahk.ps1 / setup-cx-desktop-ahk.ps1, items 5 and 6 —
 # none of which apply on macOS/Linux).
 #

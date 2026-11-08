@@ -1,5 +1,5 @@
 ﻿
-# All tool/PowerShell scripts are deployed together into $HOME\.config\powershell,
+# All tool/pwsh scripts are deployed together into $HOME\.config\powershell,
 # so sibling scripts are looked up there rather than via $PSScriptRoot.
 $ToolRoot = Join-Path $HOME ".config\powershell"
 
@@ -10,7 +10,7 @@ function ll {
 
 # workspace
 
-function aws { # golang workspace: GolandProjects
+function caws { # golang workspace: GolandProjects
     cd (Join-Path $HOME "AeryProjects")
 }
 
@@ -29,11 +29,6 @@ function acc {
     . "$ToolRoot\Exe-CC.ps1" @args
 }
 
-function agc {
-    . "$ToolRoot\Set-DevEnv.ps1"
-    . "$ToolRoot\Exe-GC.ps1" @args
-}
-
 function acx {
     . "$ToolRoot\Set-DevEnv.ps1"
     . "$ToolRoot\Exe-CX.ps1" @args
@@ -41,18 +36,11 @@ function acx {
 
 # golang cli
 
-function gcc {
+function goc {
     . "$ToolRoot\Set-DevEnv.ps1"
     . "$ToolRoot\Set-GoEnv.ps1"
     . "$ToolRoot\Set-GoVersion.ps1"
     . "$ToolRoot\Exe-CC.ps1" @args
-}
-
-function ggc {
-    . "$ToolRoot\Set-DevEnv.ps1"
-    . "$ToolRoot\Set-GoEnv.ps1"
-    . "$ToolRoot\Set-GoVersion.ps1"
-    . "$ToolRoot\Exe-GC.ps1" @args
 }
 
 function gcx {
@@ -69,13 +57,6 @@ function jcc {
     . "$ToolRoot\Set-JavaEnv.ps1"
     . "$ToolRoot\Set-JavaVersion.ps1"
     . "$ToolRoot\Exe-CC.ps1" @args
-}
-
-function jgc {
-    . "$ToolRoot\Set-DevEnv.ps1"
-    . "$ToolRoot\Set-JavaEnv.ps1"
-    . "$ToolRoot\Set-JavaVersion.ps1"
-    . "$ToolRoot\Exe-GC.ps1" @args
 }
 
 function jcx {

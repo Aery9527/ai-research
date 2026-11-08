@@ -18,7 +18,7 @@
 - 新增、移除、重新命名或明顯改動 [scripts](scripts/) 底下的腳本時，必須在同一個 slice 更新 [SCRIPTS.md](scripts/SCRIPTS.md)；新增的腳本至少必須記錄用途、參數、行為、風險或副作用，以及最小使用範例。
 - 腳本變更使 [README.md](README.md) 列出的腳本入口或摘要過期時，必須在同一個 slice 更新 README.md。
 - 新增、移除或明顯改動 [cli-agents](cli-agents/) 或 [tool](tool/) 底下的一鍵安裝腳本時，必須在同一個 slice 更新 [CLI-AGENTS.md](cli-agents/CLI-AGENTS.md) 的一鍵安裝腳本表。
-- [install-statusline.ps1](cli-agents/claude-code/install-statusline.ps1) 與 [tool/PowerShell/install.ps1](tool/PowerShell/install.ps1) 會直接覆寫目標位置的既有檔案，沒有自動 backup。
+- [install-statusline.ps1](cli-agents/claude-code/install-statusline.ps1) 與 [tool/pwsh/install.ps1](tool/pwsh/install.ps1) 會直接覆寫目標位置的既有檔案，沒有自動 backup。
 
 ## 文件結構
 

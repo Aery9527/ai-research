@@ -44,7 +44,7 @@ flowchart LR
         Cc["install-cc"]
         Cx["install-cx"]
         SysPrompt["install-sys-prompt"]
-        Pwsh["tool/PowerShell/install.ps1"]
+        Pwsh["tool/pwsh/install.ps1"]
     end
     Statusline["install-statusline"]
     Home["User home directory<br/>and system packages"]
@@ -68,7 +68,7 @@ flowchart LR
 | [codex/install-cx.sh](codex/install-cx.sh)                            | 系統層級（Node.js/npm）+ `~/.codex/pets/`                                                 | macOS 版對應腳本，同樣三步驟，改用 Homebrew 處理 npm（邏輯與 `install-cc.sh` 相同），第三步用 `cp -Rf` 把 [pets/](codex/pets/) 複製到 `~/.codex/pets/`                                                                                                                                                                                                                              | `bash ./cli-agents/codex/install-cx.sh`                                                  |
 | [install-sys-prompt.ps1](install-sys-prompt.ps1)                      | `$env:USERPROFILE\.claude\`、`$env:USERPROFILE\.codex\`、`$env:USERPROFILE\.copilot\`     | 若目標檔已存在，先改名備份為 `<檔名>_yyMMddHHmmss`，再複製三個工具的提示範本；然後依序將 [prompt-user.md](prompt-user.md) 與 [prompt-custom.md](prompt-custom.md) append 到 `CLAUDE.md`、`AGENTS.md` 與 `copilot-instructions.md` 底部                                                                                                                                                                                       | `powershell -ExecutionPolicy Bypass -File .\cli-agents\install-sys-prompt.ps1`           |
 | [install-sys-prompt.sh](install-sys-prompt.sh)                        | `$HOME/.claude/`、`$HOME/.codex/`、`$HOME/.copilot/`                                      | 與 PowerShell 版本相同，適用於 macOS、Linux 的 Bash 與 Windows 的 Git Bash；先部署範本，再依序將 [prompt-user.md](prompt-user.md) 與 [prompt-custom.md](prompt-custom.md) append 到 `CLAUDE.md`、`AGENTS.md` 與 `copilot-instructions.md` 底部                                                                                                                                                                                      | `bash ./cli-agents/install-sys-prompt.sh`                                                |
-| [tool/PowerShell/install.ps1](../tool/PowerShell/install.ps1)         | Documents 下的 `PowerShell\`（profile）+ `$HOME\.config\powershell\`（其餘腳本）          | 複製 [Microsoft.PowerShell_profile.ps1](../tool/PowerShell/Microsoft.PowerShell_profile.ps1) 到 pwsh profile 資料夾；其餘 `tool/PowerShell/` 下的腳本（`local_profile.ps1`、`Exe-*.ps1`、`Set-*.ps1` 等）複製到 `.config\powershell\`；[Set-DevEnv.ps1](../tool/PowerShell/Set-DevEnv.ps1) 載入時會為未設定或空白的 `AGENT_ENV_NOTES_FILE` 提供路徑設定提醒；詳見 [tool/TOOL.md](../tool/TOOL.md)                                                                                                      | `powershell -ExecutionPolicy Bypass -File .\tool\PowerShell\install.ps1`                 |
+| [tool/pwsh/install.ps1](../tool/pwsh/install.ps1)         | Documents 下的 `PowerShell\`（profile）+ `$HOME\.config\powershell\`（其餘腳本）          | 複製 [Microsoft.PowerShell_profile.ps1](../tool/pwsh/Microsoft.PowerShell_profile.ps1) 到 pwsh profile 資料夾；其餘 `tool/pwsh/` 下的腳本（`local_profile.ps1`、`Exe-*.ps1`、`Set-*.ps1` 等）複製到 `.config\powershell\`；[Set-DevEnv.ps1](../tool/pwsh/Set-DevEnv.ps1) 載入時會為未設定或空白的 `AGENT_ENV_NOTES_FILE` 提供路徑設定提醒；詳見 [tool/TOOL.md](../tool/TOOL.md)                                                                                                      | `powershell -ExecutionPolicy Bypass -File .\tool\pwsh\install.ps1`                 |
 
 - Windows 安裝器共用 [install-cli-common.ps1](install-cli-common.ps1) 的 PATH、Node.js 與原生程式驗證；它是函式庫，不能單獨安裝 CLI。請保留 `cli-agents/` 的相對目錄結構。
 - 兩支 Windows 安裝器會在持久 PATH 缺少 CLI 安裝目錄時補入使用者 PATH。程序 PATH 會先合併目前程序、Machine 與 User 的值並去重，保留 nvm 等程序專用路徑及優先順序；若其他安裝、alias 或 function 遮蔽新 CLI，腳本會停止並列出需處理的衝突。
@@ -84,7 +84,7 @@ flowchart LR
 - 以下行為同時適用於 [install-sys-prompt.ps1](install-sys-prompt.ps1) 與 [install-sys-prompt.sh](install-sys-prompt.sh)。
 - 每個目標檔依序合併三組英文來源：工具專用範本 → [prompt-user.md](prompt-user.md) → [prompt-custom.md](prompt-custom.md)；各組之間會補換行。繁體中文對照檔不參與安裝。
 - 依工作環境修改 [prompt-custom.md](prompt-custom.md)，並同步 [prompt-custom_ch.md](prompt-custom_ch.md) 後，重跑安裝器即可將規則部署到三個工具的使用者設定檔；空白的自訂檔也可安裝，但檔案必須存在。
-- `AGENT_ENV_NOTES_FILE` 用於指定工作環境經驗紀錄檔的完整路徑；由 agent 在使用者決定記錄工作環境案例時讀取。[Set-DevEnv.ps1](../tool/PowerShell/Set-DevEnv.ps1) 在變數未設定或空白時提供請 AI 先詢問並設定路徑的提醒文字；提醒不是路徑，agent 必須先協助設定。共用 Prompt 安裝器只合併規則文字，不讀取或展開此變數，也不設定變數或建立紀錄檔。
+- `AGENT_ENV_NOTES_FILE` 用於指定工作環境經驗紀錄檔的完整路徑；由 agent 在使用者決定記錄工作環境案例時讀取。[Set-DevEnv.ps1](../tool/pwsh/Set-DevEnv.ps1) 在變數未設定或空白時提供請 AI 先詢問並設定路徑的提醒文字；提醒不是路徑，agent 必須先協助設定。共用 Prompt 安裝器只合併規則文字，不讀取或展開此變數，也不設定變數或建立紀錄檔。
 - 設定變數後，必須讓執行 agent 的程序取得更新後的環境。Windows 可設定使用者環境變數後重新啟動工具；Bash 可在啟動工具的 shell 中以 `export` 設定。指定的紀錄檔必須可讀；變數未設定、值為設定提醒或檔案無法讀取時，agent 必須先詢問處理方式。
 - 可重複執行；每次會先將既有目標檔改名備份為 `<檔名>_yyMMddHHmmss`，同一次執行的三個檔案共用同一個時間戳記。
 - 備份不會自動清除，長期重複執行會在同目錄下累積多個備份檔，需要時自行手動清理。
